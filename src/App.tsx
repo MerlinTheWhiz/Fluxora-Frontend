@@ -7,7 +7,8 @@ import Recipient from "./pages/Recipient";
 import ConnectWallet from "./pages/ConnectWallet";
 import { useState, useEffect } from "react";
 import Landing from "./pages/Landing";
-import Navbar from "./components/Navbar";
+import AppNavbar from "./components/navigation/AppNavbar";
+import { WalletProvider } from "./components/wallet-connect/Walletcontext";
 import ErrorPage from './pages/ErrorPage';
 import NotFound from "./pages/NotFound";
 
@@ -84,32 +85,25 @@ export default function App() {
 
   return (
     <BrowserRouter>
-      {/* always show the top navbar */}
-      <Navbar onThemeToggle={handleThemeToggle} theme={theme} />
+      <WalletProvider>
+        {/* Global navbar — anon vs connected state handled internally */}
+        <AppNavbar onThemeToggle={handleThemeToggle} theme={theme} />
 
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/dashboard" element={<Navigate to="/app" replace />} />
-        <Route path="/streams" element={<Navigate to="/app/streams" replace />} />
-        <Route
-          path="/landing"
-          element={
-            <>
-              <Navbar onThemeToggle={handleThemeToggle} theme={theme} />
-              <Landing theme={theme} />
-            </>
-          }
-        />
-        <Route path="/app" element={<Layout onThemeToggle={handleThemeToggle} theme={theme} />}>
-          <Route index element={<Dashboard />} />
-          <Route path="streams" element={<Streams />} />
-          <Route path="recipient" element={<Recipient />} />
-          <Route path="treasurypage" element={<TreasuryPage />} />
-          <Route path="error" element={<ErrorPage />} />
-        </Route>
-        <Route path="/connect-wallet" element={<ConnectWallet />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/dashboard" element={<Navigate to="/app" replace />} />
+          <Route path="/streams" element={<Navigate to="/app/streams" replace />} />
+          <Route path="/landing" element={<Landing theme={theme} />} />
+          <Route path="/app" element={<Layout onThemeToggle={handleThemeToggle} theme={theme} />}>
+            <Route index element={<Dashboard />} />
+            <Route path="streams" element={<Streams />} />
+            <Route path="recipient" element={<Recipient />} />
+            <Route path="error" element={<ErrorPage />} />
+          </Route>
+          <Route path="/connect-wallet" element={<ConnectWallet />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </WalletProvider>
     </BrowserRouter>
   );
 }
