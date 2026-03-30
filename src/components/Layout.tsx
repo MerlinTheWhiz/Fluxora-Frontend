@@ -1,15 +1,8 @@
-import { Outlet } from 'react-router-dom';
-import Sidebar from './Sidebar';
-import { useState } from 'react';
-import { Outlet, Link, useLocation } from 'react-router-dom';
-import Footer from './Footer';
-import './layout.css';
-import ConnectWalletModal from './ConnectWalletModal';
 import { useState } from "react";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useLocation } from "react-router-dom";
+import AppNavbar from "./AppNavbar";
 import ConnectWalletModal from "./ConnectWalletModal";
 import Footer from "./Footer";
-import AppNavbar from "./AppNavbar";
 import "./layout.css";
 
 type NavItem = {
@@ -34,6 +27,7 @@ export default function Layout({ onThemeToggle, theme = "light" }: LayoutProps) 
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
+  const location = useLocation();
 
   const handleConnectFreighter = () => {
     setWalletAddress("GABC1234567890XYZ1");
@@ -59,33 +53,6 @@ export default function Layout({ onThemeToggle, theme = "light" }: LayoutProps) 
   };
 
   return (
-    <div style={styles.layout}>
-      <Sidebar />
-
-      <aside style={styles.sidebar}>
-        <div style={styles.logo}>Fluxora</div>
-        <nav style={styles.nav}>
-          <Link to="/" style={styles.navLink}>Dashboard</Link>
-          <Link to="/streams" style={styles.navLink}>Streams</Link>
-          <Link to="/recipient" style={styles.navLink}>Recipient</Link>
-    <div className="app-layout">
-      <aside className="app-layout__sidebar">
-      
-        <nav className="app-layout__nav">
-          <Link to="" className="app-layout__nav-link flex ">
-            <img src={DashboardIcon} alt="Dashboard" className="w-5 h-5 mr-2" />
-            Dashboard
-          </Link>
-          <Link to="streams" className="app-layout__nav-link flex">
-            <img src={StreamsIcon} alt="Streams" className="w-5 h-5 mr-2" />
-            Streams
-          </Link>
-          <Link to="recipient" className="app-layout__nav-link flex">
-            <img src={RecipientIcon} alt="Recipient" className="w-5 h-5 mr-2" />
-            Recipient
-          </Link>
-        </nav>
-         
     <div
       className={`app-layout${isSidebarCollapsed ? " is-collapsed" : ""}${isMobileSidebarOpen ? " is-mobile-open" : ""}`}
     >
@@ -133,18 +100,20 @@ export default function Layout({ onThemeToggle, theme = "light" }: LayoutProps) 
           ))}
         </nav>
 
-        <button className="app-connect-button" onClick={() => setIsModalOpen(true)}>
-          <span className="app-connect-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24">
-              <path d="M9 12h6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-              <path d="M12 9v6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-              <rect x="4" y="6" width="16" height="12" rx="3" fill="none" stroke="currentColor" strokeWidth="1.6" />
-            </svg>
-          </span>
-          <span className="app-connect-label">
-            {walletAddress ? "Switch wallet" : "Connect wallet"}
-          </span>
-        </button>
+        <div className="mt-auto p-4">
+          <button className="app-connect-button" onClick={() => setIsModalOpen(true)}>
+            <span className="app-connect-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path d="M9 12h6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                <path d="M12 9v6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                <rect x="4" y="6" width="16" height="12" rx="3" fill="none" stroke="currentColor" strokeWidth="1.6" />
+              </svg>
+            </span>
+            <span className="app-connect-label">
+              {walletAddress ? "Switch wallet" : "Connect wallet"}
+            </span>
+          </button>
+        </div>
       </aside>
 
       <div className="app-content-area">
@@ -157,7 +126,7 @@ export default function Layout({ onThemeToggle, theme = "light" }: LayoutProps) 
             aria-expanded={isMobileSidebarOpen}
             aria-controls="app-sidebar"
           >
-            <span /><span /><span />
+            <span aria-hidden="true" /><span aria-hidden="true" /><span aria-hidden="true" />
           </button>
           <div className="app-mobile-title">Fluxora</div>
         </header>
@@ -167,8 +136,6 @@ export default function Layout({ onThemeToggle, theme = "light" }: LayoutProps) 
         </main>
         
         {location.pathname.includes('treasurypage') ? null : <Footer />}
-
-        <Footer />
       </div>
 
       <button
@@ -185,7 +152,6 @@ export default function Layout({ onThemeToggle, theme = "light" }: LayoutProps) 
         onConnectAlbedo={handleConnectAlbedo}
         onConnectWalletConnect={handleConnectWalletConnect}
       />
-      </div>
     </div>
   );
 }

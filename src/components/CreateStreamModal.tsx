@@ -37,7 +37,6 @@ export default function CreateStreamModal({ isOpen, onClose, onStreamCreated }: 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const userDeposit = 200.0;
   const requiredDeposit = (parseFloat(accrualRate || '0') * parseFloat(duration || '0')).toFixed(2);
-  const displayDeposit = depositAmount.trim() ? parseFloat(depositAmount.replace(/,/g, '')).toFixed(2) : requiredDeposit;
 
   useEffect(() => {
     if (!isOpen) return;
@@ -573,7 +572,7 @@ export default function CreateStreamModal({ isOpen, onClose, onStreamCreated }: 
                 className="btn btn-next"
                 onClick={handleNext}
                 disabled={isSubmitting}
-                aria-busy={isSubmitting && currentStep === 3}
+                aria-busy={isSubmitting}
               >
                 Next
               </button>

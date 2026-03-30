@@ -10,6 +10,7 @@ import Landing from "./pages/Landing";
 import Navbar from "./components/Navbar";
 import ErrorPage from './pages/ErrorPage';
 import NotFound from "./pages/NotFound";
+import TreasuryPage from "./pages/TreasuryPage";
 
 export default function App() {
   const [theme, setTheme] = useState<"light" | "dark">(() => {
