@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import CreateStreamModal from "../components/CreateStreamModal";
 import StreamCreatedModal from "../components/Streams/StreamCreatedModal";
 import EmptyState from "../components/EmptyState";
+import StreamsLoading from "../components/StreamsLoading";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 interface Stream {
@@ -13,10 +14,18 @@ interface Stream {
 
 // ── Main Page ─────────────────────────────────────────────────────────────────
 export default function Streams() {
+  const [loading, setLoading] = useState(true);
   // Replace with real stream data from API/wallet
   const [streams] = useState<Stream[]>([]);
   // Replace with real wallet connection state
   const walletConnected = true;
+
+  useEffect(() => {
+    const t = setTimeout(() => setLoading(false), 2000);
+    return () => clearTimeout(t);
+  }, []);
+
+  if (loading) return <StreamsLoading />;
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);

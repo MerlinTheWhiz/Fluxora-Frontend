@@ -1,7 +1,15 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import EmptyState from "../components/EmptyState";
+import RecipientLoading from "../components/RecipientLoading";
 
 export default function Recipient() {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const t = setTimeout(() => setLoading(false), 2000);
+    return () => clearTimeout(t);
+  }, []);
+
   const balance: number = 22600.0;
   const activeStreams = 2;
   const totalAccrued = 43250.0;
@@ -11,6 +19,8 @@ export default function Recipient() {
   const hasStreams = activeStreams > 0;
 
   const disabled = !walletConnected || balance === 0;
+
+  if (loading) return <RecipientLoading />;
 
   if (!walletConnected || !hasStreams) {
     return (
