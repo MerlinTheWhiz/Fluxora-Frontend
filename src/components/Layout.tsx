@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, Outlet } from "react-router-dom";
 import ConnectWalletModal from "./ConnectWalletModal";
 import Footer from "./Footer";
-import "./layout.css";
+import "./Layout.css";
 
 type NavItem = { to: string; label: string; shortLabel: string };
 
