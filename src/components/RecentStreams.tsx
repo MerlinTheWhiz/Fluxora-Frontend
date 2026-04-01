@@ -16,7 +16,7 @@ interface RecentStreamsProps {
   viewAllUrl?: string;
 }
 
-export default function RecentStreams({ streams, viewAllUrl = '/streams' }: RecentStreamsProps) {
+export default function RecentStreams({ streams, viewAllUrl = '/app/streams' }: RecentStreamsProps) {
   return (
     <section style={sectionContainer}>
       <div style={header}>
@@ -55,7 +55,7 @@ export default function RecentStreams({ streams, viewAllUrl = '/streams' }: Rece
                 </td>
                 <td style={td}>
                   <Link 
-                    to={stream.detailUrl || `/streams/${stream.id}`} 
+                    to={stream.detailUrl || `/app/streams/${stream.id}`} 
                     style={viewLink}
                     aria-label={`View details for ${stream.name}`}
                   >

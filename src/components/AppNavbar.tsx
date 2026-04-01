@@ -16,12 +16,12 @@ function truncateAddress(addr: string): string {
 
 function usePageTitle(): string {
   const { pathname } = useLocation();
-  const map: Record<string, string> = {
-    "/app": "Dashboard",
-    "/app/streams": "Streams",
-    "/app/recipient": "Recipient",
-  };
-  return map[pathname] ?? "Dashboard";
+  if (pathname === "/app") return "Dashboard";
+  if (pathname.startsWith("/app/streams/")) return "Stream Detail";
+  if (pathname.startsWith("/app/streams")) return "Streams";
+  if (pathname.startsWith("/app/recipient")) return "Recipient";
+  if (pathname.startsWith("/app/treasurypage")) return "Treasury";
+  return "Dashboard";
 }
 
 function MoonIcon() {

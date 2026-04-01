@@ -26,7 +26,7 @@ export default function StreamRow({ stream }: Props) {
 
       <td className="py-3">
         <button
-          onClick={() => navigate(`/streams/${stream.id}`)}
+          onClick={() => navigate(`/app/streams/${stream.id}`)}
           className="text-teal-400  flex items-center gap-1"
         >
           View ↗

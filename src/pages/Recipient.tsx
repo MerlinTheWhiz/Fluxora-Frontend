@@ -1,18 +1,40 @@
-import { useState } from "react";
-import RecipientStreams from "../components/recipient/RecipientStreams";
-import RecipientEmptyState from "../components/RecipientEmptyState";
+import React, { useEffect, useState } from "react";
+import EmptyState from "../components/EmptyState";
+import RecipientLoading from "../components/RecipientLoading";
 
 export default function Recipient() {
-  const [walletConnected] = useState(true);
-  const [balance] = useState(24812.42);
-  const [activeStreams] = useState(3);
-  const [totalAccrued] = useState(48250.0);
-  const [totalWithdrawn] = useState(23437.58);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const t = setTimeout(() => setLoading(false), 2000);
+    return () => clearTimeout(t);
+  }, []);
+
+  const balance: number = 22600.0;
+  const activeStreams = 2;
+  const totalAccrued = 43250.0;
+  const totalWithdrawn = 20650.0;
+  const walletConnected = true;
+  // Replace with real stream data
+  const hasStreams = activeStreams > 0;
 
   const disabled = !walletConnected || balance === 0;
 
-  if (!walletConnected) {
-    return <RecipientEmptyState />;
+  if (loading) return <RecipientLoading />;
+
+  if (!walletConnected || !hasStreams) {
+    return (
+      <div>
+        <h1 style={{ marginTop: 0, fontSize: "2rem", fontWeight: 700 }}>Your streams</h1>
+        <p style={{ color: "var(--muted)", marginBottom: "2rem" }}>
+          View your incoming streams and withdraw accrued USDC at any time.
+        </p>
+        <EmptyState
+          variant="recipient"
+          walletConnected={walletConnected}
+        />
+      </div>
+    );
   }
 
   return (

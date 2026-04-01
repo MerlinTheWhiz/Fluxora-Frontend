@@ -1,138 +1,717 @@
-import React, { useState } from 'react';
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import CreateStreamModal from "../components/CreateStreamModal";
+import EmptyState from "../components/EmptyState";
 import StreamCreatedModal from "../components/Streams/StreamCreatedModal";
+import StreamsLoading from "../components/StreamsLoading";
+import {
+  getStreamRecord,
+  streamRecords,
+  type StreamHealth,
+  type StreamRecord,
+  type StreamStatus,
+} from "../data/streamRecords";
+import "./Streams.css";
 
-// ── Types ────────────────────────────────────────────────────────────────────
-interface Stream {
-  id: string;
-  recipient: string;
-  rate: string;
-  status: string;
+type StatusFilter = "All" | StreamStatus;
+
+const STATUS_FILTERS: StatusFilter[] = ["All", "Active", "Paused", "Completed"];
+
+function formatUsdc(value: number) {
+  return `${new Intl.NumberFormat("en-US", {
+    maximumFractionDigits: 0,
+  }).format(value)} USDC`;
 }
 
-// ── Empty State Component ─────────────────────────────────────────────────────
-function StreamsEmptyState({ onCreateStream }: { onCreateStream?: () => void }) {
+function formatMonthlyRate(value: number) {
+  return `${formatUsdc(value)} / mo`;
+}
+
+function formatDate(value?: string) {
+  if (!value) return "Not scheduled";
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(new Date(value));
+}
+
+function getStatusClassName(status: StreamStatus) {
+  return status.toLowerCase();
+}
+
+function getHealthClassName(health: StreamHealth) {
+  return health.toLowerCase();
+}
+
+function StatusPill({ status }: { status: StreamStatus }) {
   return (
-    <div style={emptyWrapper} role="region" aria-label="No streams empty state">
-      <div style={emptyContainer}>
+    <span className={`stream-status-pill is-${getStatusClassName(status)}`}>
+      {status}
+    </span>
+  );
+}
 
-        {/* Icon box with play triangle */}
-        <div style={iconBox}>
-          <svg
-            width="32"
-            height="32"
-            viewBox="0 0 32 32"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            aria-hidden="true"
-          >
-            <path
-              d="M11 8.5L23 16L11 23.5V8.5Z"
-              fill="url(#playGradient)"
-              stroke="rgba(94,211,243,0.4)"
-              strokeWidth="1"
-              strokeLinejoin="round"
-            />
-            <defs>
-              <linearGradient id="playGradient" x1="11" y1="8.5" x2="23" y2="23.5" gradientUnits="userSpaceOnUse">
-                <stop stopColor="#5ED3F3" />
-                <stop offset="1" stopColor="#2DD4BF" />
-              </linearGradient>
-            </defs>
-          </svg>
-        </div>
+function HealthPill({ health }: { health: StreamHealth }) {
+  return (
+    <span className={`stream-health-pill is-${getHealthClassName(health)}`}>
+      {health}
+    </span>
+  );
+}
 
-        {/* Title */}
-        <h2 style={emptyTitle}>No streams yet</h2>
-
-        {/* Description */}
-        <p style={emptyDescription}>
-          Create your first stream to start sending USDC to recipients over time.
-          Perfect for grants, salaries, and vesting schedules.
-        </p>
-
-        {/* Create stream button */}
-        <button
-          style={createButton}
-          onClick={() => onCreateStream?.()}
-          aria-label="Create a new stream"
-          onMouseOver={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.boxShadow =
-              '0 0 24px rgba(45,212,191,0.45)';
-            (e.currentTarget as HTMLButtonElement).style.filter = 'brightness(1.1)';
-          }}
-          onMouseOut={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.boxShadow =
-              '0 0 14px rgba(45,212,191,0.25)';
-            (e.currentTarget as HTMLButtonElement).style.filter = 'brightness(1)';
-          }}
-        >
-          <span style={plusIcon} aria-hidden="true">
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-              <path d="M6 1v10M1 6h10" stroke="#fff" strokeWidth="1.75" strokeLinecap="round" />
-            </svg>
-          </span>
-          Create stream
-        </button>
-
-      </div>
+function StreamMetricCard({
+  label,
+  value,
+  description,
+}: {
+  label: string;
+  value: string;
+  description: string;
+}) {
+  return (
+    <div className="stream-metric-card">
+      <span>{label}</span>
+      <strong>{value}</strong>
+      <p>{description}</p>
     </div>
   );
 }
 
-// ── Main Page ─────────────────────────────────────────────────────────────────
-export default function Streams() {
-  // Replace with real stream data from API/wallet
-  const [streams] = useState<Stream[]>([]);
+function StreamCard({
+  stream,
+  expanded,
+  onToggle,
+  onOpenDetail,
+}: {
+  stream: StreamRecord;
+  expanded: boolean;
+  onToggle: () => void;
+  onOpenDetail: () => void;
+}) {
+  return (
+    <article className={`stream-card is-${getStatusClassName(stream.status)}`}>
+      <div className="stream-card__header">
+        <div>
+          <div className="stream-card__title-row">
+            <h3>{stream.name}</h3>
+            <StatusPill status={stream.status} />
+            <HealthPill health={stream.health} />
+          </div>
+          <div className="stream-card__identity">
+            <span className="stream-chip">{stream.id}</span>
+            <span className="stream-chip">{stream.treasuryName}</span>
+            <span className="stream-chip">{stream.asset}</span>
+          </div>
+        </div>
 
+        <div className="stream-inline-actions">
+          <button
+            type="button"
+            className="streams-secondary-button"
+            onClick={onToggle}
+            aria-expanded={expanded}
+            aria-controls={`stream-expanded-${stream.id}`}
+          >
+            {expanded ? "Collapse deep dive" : "Expand deep dive"}
+          </button>
+          <button
+            type="button"
+            className="streams-ghost-button"
+            onClick={onOpenDetail}
+          >
+            Open detail
+          </button>
+        </div>
+      </div>
+
+      <p className="stream-card__summary">{stream.summary}</p>
+
+      <div className="stream-card__facts">
+        <div className="stream-meta-block">
+          <span>Recipient</span>
+          <strong>{stream.recipientName}</strong>
+          <code>{stream.recipientAddress}</code>
+        </div>
+        <div className="stream-meta-block">
+          <span>Streaming rate</span>
+          <strong>{formatMonthlyRate(stream.monthlyRate)}</strong>
+          <div className="stream-card__meta-label">
+            Runs through {formatDate(stream.endDate)}
+          </div>
+        </div>
+        <div className="stream-meta-block">
+          <span>Withdrawable now</span>
+          <strong>{formatUsdc(stream.withdrawableAmount)}</strong>
+          <div className="stream-card__meta-label">
+            Next unlock {formatDate(stream.nextUnlockDate)}
+          </div>
+        </div>
+      </div>
+
+      <div className="stream-progress">
+        <div className="stream-progress__header">
+          <span>Funding window progress</span>
+          <strong>{stream.progress}%</strong>
+        </div>
+        <div className="stream-progress__bar" aria-hidden="true">
+          <span style={{ width: `${stream.progress}%` }} />
+        </div>
+      </div>
+
+      {expanded ? (
+        <div
+          className="stream-card__expanded"
+          id={`stream-expanded-${stream.id}`}
+        >
+          <div className="stream-card__metrics">
+            <StreamMetricCard
+              label="Deposited"
+              value={formatUsdc(stream.depositAmount)}
+              description="Treasury capital assigned to this stream."
+            />
+            <StreamMetricCard
+              label="Streamed"
+              value={formatUsdc(stream.streamedAmount)}
+              description="Amount already accrued over the schedule."
+            />
+            <StreamMetricCard
+              label="Remaining"
+              value={formatUsdc(stream.remainingAmount)}
+              description="Balance still reserved for future accrual."
+            />
+          </div>
+
+          <div className="stream-card__expanded-layout">
+            <section className="stream-panel">
+              <h4 className="stream-panel__header">Deep-dive summary</h4>
+              <div className="stream-panel__rows">
+                <div className="stream-panel__row">
+                  <span className="stream-panel__row-label">Treasury</span>
+                  <div className="stream-panel__row-value">
+                    {stream.treasuryName}
+                    <div className="stream-panel__mono">
+                      {stream.treasuryAddress}
+                    </div>
+                  </div>
+                </div>
+                <div className="stream-panel__row">
+                  <span className="stream-panel__row-label">Cliff date</span>
+                  <div className="stream-panel__row-value">
+                    {formatDate(stream.cliffDate)}
+                  </div>
+                </div>
+                <div className="stream-panel__row">
+                  <span className="stream-panel__row-label">Health note</span>
+                  <div className="stream-panel__row-value">
+                    {stream.healthNote}
+                  </div>
+                </div>
+                <div className="stream-panel__row">
+                  <span className="stream-panel__row-label">Audit note</span>
+                  <div className="stream-panel__row-value">
+                    {stream.auditNote}
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <aside className="stream-action-card">
+              <h2>What to watch</h2>
+              <div className="stream-action-note">
+                <strong>Next checkpoint</strong>
+                <p>
+                  {stream.timeline[stream.timeline.length - 1]?.detail ??
+                    "No additional timeline notes yet."}
+                </p>
+              </div>
+              <div className="stream-tag-list">
+                {stream.tags.map((tag) => (
+                  <span className="stream-tag" key={tag}>
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </aside>
+          </div>
+        </div>
+      ) : null}
+    </article>
+  );
+}
+
+function StreamDetail({
+  stream,
+  onBack,
+  onCreateSimilar,
+  onCopyAddress,
+}: {
+  stream: StreamRecord;
+  onBack: () => void;
+  onCreateSimilar: () => void;
+  onCopyAddress: () => void;
+}) {
+  return (
+    <>
+      <button
+        type="button"
+        className="streams-ghost-button stream-detail__back"
+        onClick={onBack}
+      >
+        Back to all streams
+      </button>
+
+      <section className="stream-detail__hero">
+        <div className="stream-detail__headline">
+          <p className="streams-eyebrow">Stream deep dive</p>
+          <div className="stream-detail__status-row">
+            <h1>{stream.name}</h1>
+            <StatusPill status={stream.status} />
+            <HealthPill health={stream.health} />
+          </div>
+          <p>{stream.summary}</p>
+          <div className="stream-detail__meta">
+            <span className="stream-chip">{stream.id}</span>
+            <span className="stream-chip">{stream.recipientName}</span>
+            <span className="stream-chip">{formatMonthlyRate(stream.monthlyRate)}</span>
+            <span className="stream-chip">Ends {formatDate(stream.endDate)}</span>
+          </div>
+        </div>
+
+        <div className="stream-detail__hero-actions">
+          <button
+            type="button"
+            className="streams-secondary-button"
+            onClick={onCopyAddress}
+          >
+            Copy recipient
+          </button>
+          <a
+            className="streams-link-button"
+            href={`https://stellar.expert/explorer/testnet/account/${stream.recipientAddress}`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            View in explorer
+          </a>
+          <button
+            type="button"
+            className="streams-primary-button"
+            onClick={onCreateSimilar}
+          >
+            Create similar stream
+          </button>
+        </div>
+      </section>
+
+      <section className="stream-detail__metrics">
+        <StreamMetricCard
+          label="Deposited"
+          value={formatUsdc(stream.depositAmount)}
+          description="Capital committed by the treasury."
+        />
+        <StreamMetricCard
+          label="Streamed"
+          value={formatUsdc(stream.streamedAmount)}
+          description="Accrued over the lifetime of the stream."
+        />
+        <StreamMetricCard
+          label="Available now"
+          value={formatUsdc(stream.withdrawableAmount)}
+          description="Immediately withdrawable by the recipient."
+        />
+        <StreamMetricCard
+          label="Remaining"
+          value={formatUsdc(stream.remainingAmount)}
+          description="Still reserved for future unlocks."
+        />
+      </section>
+
+      <div className="stream-detail__layout">
+        <div className="stream-panel-stack">
+          <section className="stream-panel">
+            <h2 className="stream-panel__header">Configuration</h2>
+            <div className="stream-panel__rows">
+              <div className="stream-panel__row">
+                <span className="stream-panel__row-label">Recipient</span>
+                <div className="stream-panel__row-value">
+                  {stream.recipientName}
+                  <div className="stream-panel__mono">
+                    {stream.recipientAddress}
+                  </div>
+                </div>
+              </div>
+              <div className="stream-panel__row">
+                <span className="stream-panel__row-label">Treasury source</span>
+                <div className="stream-panel__row-value">
+                  {stream.treasuryName}
+                  <div className="stream-panel__mono">
+                    {stream.treasuryAddress}
+                  </div>
+                </div>
+              </div>
+              <div className="stream-panel__row">
+                <span className="stream-panel__row-label">Asset</span>
+                <div className="stream-panel__row-value">{stream.asset}</div>
+              </div>
+              <div className="stream-panel__row">
+                <span className="stream-panel__row-label">Streaming rate</span>
+                <div className="stream-panel__row-value">
+                  {formatMonthlyRate(stream.monthlyRate)}
+                </div>
+              </div>
+              <div className="stream-panel__row">
+                <span className="stream-panel__row-label">Start date</span>
+                <div className="stream-panel__row-value">
+                  {formatDate(stream.startDate)}
+                </div>
+              </div>
+              <div className="stream-panel__row">
+                <span className="stream-panel__row-label">Cliff date</span>
+                <div className="stream-panel__row-value">
+                  {formatDate(stream.cliffDate)}
+                </div>
+              </div>
+              <div className="stream-panel__row">
+                <span className="stream-panel__row-label">End date</span>
+                <div className="stream-panel__row-value">
+                  {formatDate(stream.endDate)}
+                </div>
+              </div>
+              <div className="stream-panel__row">
+                <span className="stream-panel__row-label">Next unlock</span>
+                <div className="stream-panel__row-value">
+                  {formatDate(stream.nextUnlockDate)}
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section className="stream-panel">
+            <h2 className="stream-panel__header">Timeline</h2>
+            <div className="stream-timeline">
+              {stream.timeline.map((event) => (
+                <div className="stream-timeline__item" key={event.date + event.title}>
+                  <div className="stream-timeline__date">
+                    {formatDate(event.date)}
+                  </div>
+                  <div className="stream-timeline__title">{event.title}</div>
+                  <div className="stream-timeline__detail">{event.detail}</div>
+                </div>
+              ))}
+            </div>
+          </section>
+        </div>
+
+        <aside className="stream-panel-stack">
+          <section className="stream-action-card">
+            <h2>Health and controls</h2>
+            <div className="stream-action-note">
+              <strong>{stream.health} status</strong>
+              <p>{stream.healthNote}</p>
+            </div>
+            <div className="stream-action-note">
+              <strong>Audit note</strong>
+              <p>{stream.auditNote}</p>
+            </div>
+            <div className="stream-action-list">
+              <button
+                type="button"
+                className="streams-secondary-button"
+                onClick={onCopyAddress}
+              >
+                Copy recipient
+              </button>
+              <button
+                type="button"
+                className="streams-ghost-button"
+                onClick={onCreateSimilar}
+              >
+                Duplicate setup
+              </button>
+            </div>
+          </section>
+
+          <section className="stream-action-card">
+            <h2>Operational tags</h2>
+            <div className="stream-tag-list">
+              {stream.tags.map((tag) => (
+                <span className="stream-tag" key={tag}>
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </section>
+        </aside>
+      </div>
+    </>
+  );
+}
+
+function StreamNotFound({
+  streamId,
+  onBack,
+  onCreateStream,
+}: {
+  streamId: string;
+  onBack: () => void;
+  onCreateStream: () => void;
+}) {
+  return (
+    <section className="stream-empty-state">
+      <p className="streams-eyebrow">Stream detail</p>
+      <h2>We couldn&apos;t find {streamId}</h2>
+      <p>
+        The requested stream does not exist in the current demo dataset. Head
+        back to the streams list or create a new one from this branch.
+      </p>
+      <div className="stream-inline-actions">
+        <button type="button" className="streams-ghost-button" onClick={onBack}>
+          Back to streams
+        </button>
+        <button
+          type="button"
+          className="streams-primary-button"
+          onClick={onCreateStream}
+        >
+          Create stream
+        </button>
+      </div>
+    </section>
+  );
+}
+
+export default function Streams() {
+  const navigate = useNavigate();
+  const { streamId } = useParams();
+
+  const [loading, setLoading] = useState(true);
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("All");
+  const [expandedStreamId, setExpandedStreamId] = useState<string>(
+    streamRecords[0]?.id ?? "",
+  );
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [createdStream, setCreatedStream] = useState({
-    id: "529",
-    url: "https://fluxora.io/stream/529",
+    id: "STR-NEW",
+    url: "https://fluxora.io/stream/STR-NEW",
   });
+  const [toastMessage, setToastMessage] = useState("");
+  const walletConnected = true;
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setLoading(false), 2000);
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    if (!toastMessage) return undefined;
+
+    const timer = window.setTimeout(() => setToastMessage(""), 2200);
+    return () => window.clearTimeout(timer);
+  }, [toastMessage]);
+
+  if (loading) return <StreamsLoading />;
+
+  const activeStreams = streamRecords.filter((stream) => stream.status === "Active");
+  const monthlyOutflow = activeStreams.reduce(
+    (total, stream) => total + stream.monthlyRate,
+    0,
+  );
+  const withdrawableNow = streamRecords.reduce(
+    (total, stream) => total + stream.withdrawableAmount,
+    0,
+  );
+  const nextUnlock = activeStreams
+    .map((stream) => stream.nextUnlockDate)
+    .filter(Boolean)
+    .sort()[0];
+  const visibleStreams =
+    statusFilter === "All"
+      ? streamRecords
+      : streamRecords.filter((stream) => stream.status === statusFilter);
+  const selectedStream = streamId ? getStreamRecord(streamId) : undefined;
+  const hasStreams = streamRecords.length > 0;
+  const showEmptyState = !selectedStream && (!walletConnected || !hasStreams);
+  const effectiveExpandedId = visibleStreams.some(
+    (stream) => stream.id === expandedStreamId,
+  )
+    ? expandedStreamId
+    : visibleStreams[0]?.id;
 
   const handleCreateStream = () => {
     setIsCreateModalOpen(true);
   };
 
   const handleStreamCreated = () => {
-    setCreatedStream({ id: "529", url: "https://fluxora.io/stream/529" });
+    const generatedId = `STR-${String(streamRecords.length + 1).padStart(3, "0")}`;
+    setCreatedStream({
+      id: generatedId,
+      url: `https://fluxora.io/stream/${generatedId}`,
+    });
+    setIsCreateModalOpen(false);
     setIsSuccessModalOpen(true);
   };
 
-  return (
-    <div>
-      <h1 style={{ marginTop: 0 }}>Streams</h1>
-      <p style={{ color: 'var(--muted)' }}>
-        Create and manage USDC streams. Set rate, duration, and cliff from the treasury.
-      </p>
+  const handleCopyRecipient = async (stream: StreamRecord) => {
+    try {
+      await navigator.clipboard.writeText(stream.recipientAddress);
+      setToastMessage(`Recipient for ${stream.name} copied.`);
+    } catch {
+      setToastMessage("Clipboard access is unavailable in this browser.");
+    }
+  };
 
-      {streams.length === 0 ? (
-        <StreamsEmptyState onCreateStream={handleCreateStream} />
+  if (streamId && !selectedStream) {
+    return (
+      <>
+        <StreamNotFound
+          streamId={streamId}
+          onBack={() => navigate("/app/streams")}
+          onCreateStream={handleCreateStream}
+        />
+
+        <CreateStreamModal
+          isOpen={isCreateModalOpen}
+          onClose={() => setIsCreateModalOpen(false)}
+          onStreamCreated={handleStreamCreated}
+        />
+        <StreamCreatedModal
+          isOpen={isSuccessModalOpen}
+          onClose={() => setIsSuccessModalOpen(false)}
+          streamId={createdStream.id}
+          streamUrl={createdStream.url}
+          onCreateAnother={() => {
+            setIsSuccessModalOpen(false);
+            setIsCreateModalOpen(true);
+          }}
+        />
+      </>
+    );
+  }
+
+  return (
+    <div className="streams-page">
+      {selectedStream ? (
+        <StreamDetail
+          stream={selectedStream}
+          onBack={() => navigate("/app/streams")}
+          onCreateSimilar={handleCreateStream}
+          onCopyAddress={() => void handleCopyRecipient(selectedStream)}
+        />
+      ) : showEmptyState ? (
+        <section>
+          <h1 style={{ marginTop: 0 }}>Streams</h1>
+          <p style={{ color: "var(--muted)" }}>
+            Create and manage USDC streams. Set rate, duration, and cliff from
+            the treasury.
+          </p>
+          <EmptyState
+            variant="streams"
+            walletConnected={walletConnected}
+            onPrimaryAction={
+              walletConnected
+                ? handleCreateStream
+                : () => navigate("/connect-wallet")
+            }
+          />
+        </section>
       ) : (
-        <div style={tableWrap}>
-          <table style={table}>
-            <thead>
-              <tr>
-                <th>Stream</th>
-                <th>Recipient</th>
-                <th>Rate</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {streams.map((stream) => (
-                <tr key={stream.id}>
-                  <td>{stream.id}</td>
-                  <td>{stream.recipient}</td>
-                  <td>{stream.rate}</td>
-                  <td>{stream.status}</td>
-                </tr>
+        <>
+          <section className="streams-hero">
+            <div className="streams-hero__copy">
+              <p className="streams-eyebrow">Treasury streaming</p>
+              <h1>Streams</h1>
+              <p className="streams-subtitle">
+                Review every stream from a single operational surface, then open
+                a deeper layout when treasury context, recipient balance, or
+                audit notes need closer attention.
+              </p>
+            </div>
+            <div className="streams-hero__actions">
+              <button
+                type="button"
+                className="streams-primary-button"
+                onClick={handleCreateStream}
+              >
+                Create stream
+              </button>
+              <button
+                type="button"
+                className="streams-secondary-button"
+                onClick={() => navigate(`/app/streams/${streamRecords[0]?.id}`)}
+              >
+                Open featured deep dive
+              </button>
+            </div>
+          </section>
+
+          <section className="streams-summary-grid" aria-label="Stream summary">
+            <div className="streams-summary-card">
+              <span>Active streams</span>
+              <strong>{activeStreams.length}</strong>
+              <p>Currently accruing from treasury capital.</p>
+            </div>
+            <div className="streams-summary-card">
+              <span>Monthly outflow</span>
+              <strong>{formatUsdc(monthlyOutflow)}</strong>
+              <p>Projected accrual across active streams each month.</p>
+            </div>
+            <div className="streams-summary-card">
+              <span>Withdrawable now</span>
+              <strong>{formatUsdc(withdrawableNow)}</strong>
+              <p>Available to recipients right now without a refill.</p>
+            </div>
+            <div className="streams-summary-card">
+              <span>Next unlock</span>
+              <strong>{formatDate(nextUnlock)}</strong>
+              <p>Earliest upcoming release window across active streams.</p>
+            </div>
+          </section>
+
+          <section className="streams-list-shell">
+            <div className="streams-list-head">
+              <div>
+                <h2>Deep-dive ready list</h2>
+                <p className="streams-subtitle">
+                  Expand a row for the operational summary or open the full
+                  stream detail route for the complete layout.
+                </p>
+              </div>
+              <div className="streams-filter-group" aria-label="Filter streams">
+                {STATUS_FILTERS.map((filter) => (
+                  <button
+                    type="button"
+                    key={filter}
+                    className={`streams-filter-button${
+                      statusFilter === filter ? " is-active" : ""
+                    }`}
+                    onClick={() => setStatusFilter(filter)}
+                    aria-pressed={statusFilter === filter}
+                  >
+                    {filter}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="streams-list">
+              {visibleStreams.map((stream) => (
+                <StreamCard
+                  key={stream.id}
+                  stream={stream}
+                  expanded={effectiveExpandedId === stream.id}
+                  onToggle={() =>
+                    setExpandedStreamId((current) =>
+                      current === stream.id ? "" : stream.id,
+                    )
+                  }
+                  onOpenDetail={() => navigate(`/app/streams/${stream.id}`)}
+                />
               ))}
-            </tbody>
-          </table>
-        </div>
+            </div>
+          </section>
+        </>
       )}
 
       <CreateStreamModal
@@ -150,98 +729,12 @@ export default function Streams() {
           setIsCreateModalOpen(true);
         }}
       />
+
+      {toastMessage ? (
+        <div className="streams-toast" role="status" aria-live="polite">
+          {toastMessage}
+        </div>
+      ) : null}
     </div>
   );
 }
-
-// ── Styles ────────────────────────────────────────────────────────────────────
-const emptyWrapper: React.CSSProperties = {
-  marginTop: '1.5rem',
-  background: 'var(--surface)',
-  border: '1px solid var(--border)',
-  borderRadius: 12,
-  overflow: 'hidden',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  padding: '64px 24px',
-};
-
-const emptyContainer: React.CSSProperties = {
-  textAlign: 'center',
-  maxWidth: '480px',
-  width: '100%',
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-};
-
-const iconBox: React.CSSProperties = {
-  width: '72px',
-  height: '72px',
-  marginBottom: '24px',
-  background: 'linear-gradient(135deg, rgba(94,211,243,0.08) 0%, rgba(45,212,191,0.12) 100%)',
-  borderRadius: '20px',
-  border: '1px solid rgba(94,211,243,0.15)',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  boxShadow: '0 0 24px rgba(45,212,191,0.08)',
-};
-
-const emptyTitle: React.CSSProperties = {
-  fontSize: '20px',
-  fontWeight: 700,
-  color: '#FFFFFF',
-  margin: '0 0 12px 0',
-};
-
-const emptyDescription: React.CSSProperties = {
-  fontSize: '14px',
-  lineHeight: 1.6,
-  color: '#99A1AF',
-  margin: '0 0 28px 0',
-  maxWidth: '400px',
-};
-
-const createButton: React.CSSProperties = {
-  display: 'inline-flex',
-  alignItems: 'center',
-  gap: '8px',
-  padding: '12px 20px',
-  minHeight: '44px',
-  borderRadius: '8px',
-  border: 'none',
-  background: 'linear-gradient(135deg, #2DD4BF 0%, #0EA5A0 100%)',
-  color: '#FFFFFF',
-  fontSize: '14px',
-  fontWeight: 500,
-  cursor: 'pointer',
-  boxShadow: '0 0 14px rgba(45,212,191,0.25)',
-  transition: 'all 0.2s ease',
-};
-
-const plusIcon: React.CSSProperties = {
-  display: 'inline-flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  width: '18px',
-  height: '18px',
-  background: 'rgba(255,255,255,0.2)',
-  borderRadius: '4px',
-  flexShrink: 0,
-};
-
-const tableWrap: React.CSSProperties = {
-  marginTop: "1.5rem",
-  background: "var(--surface)",
-  border: "1px solid var(--border)",
-  borderRadius: 12,
-  overflow: "hidden",
-};
-
-const table: React.CSSProperties = {
-  width: '100%',
-  borderCollapse: 'collapse',
-};
-

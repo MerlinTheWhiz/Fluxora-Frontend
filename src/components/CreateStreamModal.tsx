@@ -572,7 +572,6 @@ export default function CreateStreamModal({ isOpen, onClose, onStreamCreated }: 
                 className="btn btn-next"
                 onClick={handleNext}
                 disabled={isSubmitting}
-                aria-busy={isSubmitting}
               >
                 Next
               </button>

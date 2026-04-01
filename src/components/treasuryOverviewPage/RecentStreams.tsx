@@ -9,7 +9,7 @@ export default function RecentStreams() {
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-bold text-black">Recent streams</h2>
         <button
-          onClick={() => navigate("/streams")}
+          onClick={() => navigate("/app/streams")}
           className="text-teal-400"
         >
           View all →
