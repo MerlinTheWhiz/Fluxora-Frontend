@@ -25,71 +25,14 @@ function LegacyStreamRedirect() {
 
 export default function App() {
   const [theme, setTheme] = useState<"light" | "dark">(() => {
-    const saved = localStorage.getItem("theme");
-    if (saved) return saved as "light" | "dark";
-    return window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? "dark"
-      : "light";
+    return (document.documentElement.getAttribute("data-theme") as "light" | "dark") || "light";
   });
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
-    const root = document.documentElement;
-    root.setAttribute("data-theme", theme);
+    document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem("theme", theme);
-
-    if (theme === "light") {
-      root.style.setProperty("--bg", "#ffffff");
-      root.style.setProperty("--surface", "#f5f7fa");
-      root.style.setProperty("--border", "#e0e6ed");
-      root.style.setProperty("--text", "#1a1f36");
-      root.style.setProperty("--muted", "#6b7a94");
-      root.style.setProperty("--accent", "#00d4aa");
-      root.style.setProperty("--accent-dim", "#00a884");
-      root.style.setProperty("--navbar-bg", "#ffffff");
-      root.style.setProperty("--navbar-border", "#e0e6ed");
-      root.style.setProperty("--navbar-logo-color", "#1a1f36");
-      root.style.setProperty("--navbar-link-color", "#4A5565");
-      root.style.setProperty("--navbar-icon-color", "#6b7a94");
-      root.style.setProperty("--navbar-icon-border", "#d0d7e0");
-      root.style.setProperty(
-        "--navbar-shadow",
-        "0 2px 8px rgba(0, 0, 0, 0.08)",
-      );
-      root.style.setProperty("--cta-bg", "#00d4aa");
-      root.style.setProperty(
-        "--cta-shadow",
-        "0 4px 12px rgba(0, 212, 170, 0.2)",
-      );
-      root.style.setProperty("--network-testnet-bg", "#fef3c7");
-      root.style.setProperty("--network-testnet-text", "#92400e");
-    } else {
-      root.style.setProperty("--bg", "#0a0e17");
-      root.style.setProperty("--surface", "#121a2a");
-      root.style.setProperty("--border", "#1e2d42");
-      root.style.setProperty("--text", "#e8ecf4");
-      root.style.setProperty("--muted", "#6b7a94");
-      root.style.setProperty("--accent", "#00d4aa");
-      root.style.setProperty("--accent-dim", "#00a884");
-      root.style.setProperty("--navbar-bg", "#0f1419");
-      root.style.setProperty("--navbar-border", "#1a2534");
-      root.style.setProperty("--navbar-logo-color", "#e8ecf4");
-      root.style.setProperty("--navbar-link-color", "#9ca3af");
-      root.style.setProperty("--navbar-icon-color", "#9ca3af");
-      root.style.setProperty("--navbar-icon-border", "#374151");
-      root.style.setProperty(
-        "--navbar-shadow",
-        "0 4px 12px rgba(0, 0, 0, 0.3)",
-      );
-      root.style.setProperty("--cta-bg", "#00d4aa");
-      root.style.setProperty(
-        "--cta-shadow",
-        "0 4px 12px rgba(0, 212, 170, 0.3)",
-      );
-      root.style.setProperty("--network-testnet-bg", "rgba(250,224,141,0.15)");
-      root.style.setProperty("--network-testnet-text", "#fbd96a");
-    }
   }, [theme]);
 
   const handleThemeToggle = () => {
