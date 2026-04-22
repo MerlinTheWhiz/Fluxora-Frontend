@@ -58,7 +58,8 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 );
 
 Button.displayName = 'Button';
-```
+
+> Implementation note: the app uses shared `.button`, `.button--primary`, `.button--secondary`, and `.button--ghost` classes for consistent hover, focus, disabled, and loading states instead of inline styles.
 
 ### CSS Implementation
 

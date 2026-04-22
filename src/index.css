@@ -102,13 +102,95 @@ nav a:focus {
   outline-offset: 4px;
 }
 
-button:hover {
-  opacity: 0.9;
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.85rem 1.3rem;
+  border-radius: 0.875rem;
+  border: 1px solid transparent;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease,
+    opacity 0.2s ease;
+  text-decoration: none;
+}
+
+.button:hover:not(:disabled) {
   transform: translateY(-1px);
 }
 
-button:active {
+.button:focus-visible {
+  outline: 2px solid rgba(0, 212, 170, 0.7);
+  outline-offset: 4px;
+  box-shadow: 0 0 0 4px rgba(0, 212, 170, 0.16);
+}
+
+.button:active:not(:disabled) {
   transform: translateY(0);
+}
+
+.button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.button--primary {
+  background: var(--accent);
+  color: #071117;
+  box-shadow: var(--cta-shadow);
+}
+
+.button--primary:hover:not(:disabled) {
+  background: var(--accent-dim);
+}
+
+.button--secondary {
+  background: rgba(0, 212, 170, 0.12);
+  color: #ffffff;
+  border-color: rgba(0, 212, 170, 0.3);
+}
+
+.button--secondary:hover:not(:disabled) {
+  background: rgba(0, 212, 170, 0.22);
+}
+
+.button--ghost {
+  background: transparent;
+  color: var(--accent);
+  border-color: rgba(0, 212, 170, 0.24);
+}
+
+.button--ghost:hover:not(:disabled) {
+  background: rgba(0, 212, 170, 0.08);
+}
+
+.button--loading {
+  pointer-events: none;
+  opacity: 0.65;
+}
+
+.button__spinner {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 button[aria-label*="Switch"]:hover {
