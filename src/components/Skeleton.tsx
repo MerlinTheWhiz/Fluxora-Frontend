@@ -1,7 +1,7 @@
 import React from "react";
 import "./skeleton.css";
 
-interface SkeletonProps {
+interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {
   width?: string | number;
   height?: string | number;
   borderRadius?: string | number;
@@ -9,11 +9,19 @@ interface SkeletonProps {
 }
 
 /** Single shimmer block. Width/height default to 100% so it fills its container. */
-export function Skeleton({ width = "100%", height = 14, borderRadius = 6, style }: SkeletonProps) {
+export function Skeleton({
+  width = "100%",
+  height = 14,
+  borderRadius = 6,
+  style,
+  className = "",
+  ...rest
+}: SkeletonProps) {
   return (
     <div
-      className="skeleton"
+      className={`skeleton ${className}`.trim()}
       style={{ width, height, borderRadius, flexShrink: 0, ...style }}
+      {...rest}
     />
   );
 }
@@ -33,12 +41,15 @@ export function SkeletonText({ lines = 2, lastLineWidth = "60%" }: { lines?: num
 export function SkeletonCard({
   children,
   style,
+  className = "",
+  ...rest
 }: {
   children: React.ReactNode;
   style?: React.CSSProperties;
-}) {
+} & React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
+      className={className}
       style={{
         background: "var(--surface)",
         border: "1px solid var(--border)",
@@ -46,6 +57,7 @@ export function SkeletonCard({
         padding: "1.25rem",
         ...style,
       }}
+      {...rest}
     >
       {children}
     </div>

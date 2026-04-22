@@ -359,7 +359,8 @@ Badge (Success): --status-success (#1ec98e) on semi-transparent overlay
 
 **Accessibility Notes:**
 - Focus ring: 2px solid `--border-interactive` with 2px offset.
-- Loading state: Skeleton pulses at 1.5s cycle; no color-only indication.
+- Loading state: Skeleton shimmer runs on a 1.5s cycle and uses theme-aware base/highlight tokens so dark mode keeps a clearly visible highlight band without looking like a flashing stripe.
+- Reduced motion: `prefers-reduced-motion` freezes the skeleton at a static mid-shimmer frame.
 - Error/Success: Icon + badge + optional border tint ensures colorblind clarity.
 
 ---
@@ -481,9 +482,27 @@ When anonymous (no wallet):
 During async operations (e.g., balance validation):
 | Element | Appearance |
 |---------|-----------|
-| **Input fields** | Skeleton pulse (gray bar, 1.5s cycle) |
-| **Confirmation text** | Skeleton lines, staggered pulse |
+| **Input fields** | Skeleton shimmer using `--skeleton-base` / `--skeleton-shine`; dark theme highlight must remain visible against `surface-neutral` and `surface-elevated` |
+| **Confirmation text** | Skeleton lines, staggered shimmer with the same theme-aware tokens |
 | **CTA button** | Spinner overlay, opacity 0.5 |
+
+**Skeleton Token Guidance:**
+
+```css
+:root[data-theme="dark"] {
+  --skeleton-base: #1f2a3e;
+  --skeleton-shine: #38516f;
+}
+
+:root[data-theme="light"] {
+  --skeleton-base: #e6edf5;
+  --skeleton-shine: #ffffff;
+}
+```
+
+- Dark theme shimmer should read as a distinct moving highlight, not as a barely perceptible tint shift.
+- Keep the highlight band narrow enough to preserve depth on dark cards and tables.
+- Reuse the same skeleton tokens across dashboard, streams, and recipient loading surfaces for consistency.
 
 **Error & Success States:**
 
