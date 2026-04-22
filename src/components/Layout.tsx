@@ -42,7 +42,9 @@ export default function Layout({
             </div>
           </main>
 
-          {showFooter ? <Footer /> : null}
+          <div className={isSidebarCollapsed ? "md:pl-20" : "md:pl-64"}>
+            {showFooter ? <Footer /> : null}
+          </div>
         </div>
       </div>
 
