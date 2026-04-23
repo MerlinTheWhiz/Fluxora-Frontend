@@ -27,7 +27,7 @@ function FluxoraLogo({ connected }: { connected: boolean }) {
     <Link
       to={connected ? "/app" : "/"}
       aria-label="Fluxora home"
-      className="flex items-center gap-2 outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] rounded-md"
+      className="flex items-center gap-2 min-h-[44px] outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] rounded-md"
     >
       <svg width="34" height="34" viewBox="0 0 46 46" fill="none" aria-hidden="true">
         <defs>
@@ -123,7 +123,7 @@ export default function AppNavbar({ onThemeToggle, theme = "dark" }: AppNavbarPr
           <button
             onClick={onThemeToggle}
             aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
-            className="flex items-center justify-center w-9 h-9 rounded-full border border-[var(--navbar-icon-border)] text-[var(--navbar-icon-color)] hover:border-[var(--accent)]/50 hover:text-[var(--accent)] transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+            className="flex items-center justify-center min-h-[44px] min-w-[44px] rounded-full border border-[var(--navbar-icon-border)] text-[var(--navbar-icon-color)] hover:border-[var(--accent)]/50 hover:text-[var(--accent)] transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
           >
             {theme === "light" ? <Moon size={16} aria-hidden="true" /> : <Sun size={16} aria-hidden="true" />}
           </button>
@@ -137,7 +137,7 @@ export default function AppNavbar({ onThemeToggle, theme = "dark" }: AppNavbarPr
             <Link
               to="/connect-wallet"
               aria-label="Connect your Stellar wallet"
-              className="px-5 h-9 rounded-full bg-[var(--cta-bg)] text-white text-sm font-semibold shadow-[var(--cta-shadow)] hover:opacity-90 transition-opacity outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] flex items-center"
+              className="px-5 h-[44px] rounded-full bg-[var(--cta-bg)] text-white text-sm font-semibold shadow-[var(--cta-shadow)] hover:opacity-90 transition-opacity outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] flex items-center"
             >
               Connect Wallet
             </Link>
@@ -146,7 +146,7 @@ export default function AppNavbar({ onThemeToggle, theme = "dark" }: AppNavbarPr
 
         {/* Mobile: hamburger */}
         <button
-          className="md:hidden flex items-center justify-center w-10 h-10 rounded-md text-[var(--navbar-icon-color)] hover:text-[var(--text)] transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+          className="md:hidden flex items-center justify-center min-h-[44px] min-w-[44px] rounded-md text-[var(--navbar-icon-color)] hover:text-[var(--text)] transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
           onClick={() => setMobileOpen((o) => !o)}
           aria-label={mobileOpen ? "Close navigation menu" : "Open navigation menu"}
           aria-expanded={mobileOpen}
@@ -162,7 +162,7 @@ export default function AppNavbar({ onThemeToggle, theme = "dark" }: AppNavbarPr
           id="mobile-nav"
           role="navigation"
           aria-label={connected ? "App navigation" : "Marketing navigation"}
-          className="md:hidden border-t border-[var(--navbar-border)] bg-[var(--navbar-bg)] px-4 pb-4 pt-2 flex flex-col gap-1"
+          className="md:hidden border-t border-[var(--navbar-border)] bg-[var(--navbar-bg)] px-4 pb-4 pt-2 flex flex-col gap-2"
         >
           {links.map((link) => (
             <NavLink key={link.to} to={link.to} label={link.label} onClick={closeMobile} />
@@ -172,7 +172,7 @@ export default function AppNavbar({ onThemeToggle, theme = "dark" }: AppNavbarPr
             <button
               onClick={onThemeToggle}
               aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
-              className="flex items-center justify-center w-9 h-9 rounded-full border border-[var(--navbar-icon-border)] text-[var(--navbar-icon-color)] hover:border-[var(--accent)]/50 hover:text-[var(--accent)] transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+              className="flex items-center justify-center min-h-[44px] min-w-[44px] rounded-full border border-[var(--navbar-icon-border)] text-[var(--navbar-icon-color)] hover:border-[var(--accent)]/50 hover:text-[var(--accent)] transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
             >
               {theme === "light" ? <Moon size={16} aria-hidden="true" /> : <Sun size={16} aria-hidden="true" />}
             </button>
@@ -186,7 +186,7 @@ export default function AppNavbar({ onThemeToggle, theme = "dark" }: AppNavbarPr
                 to="/connect-wallet"
                 onClick={closeMobile}
                 aria-label="Connect your Stellar wallet"
-                className="px-5 h-9 rounded-full bg-[var(--cta-bg)] text-white text-sm font-semibold shadow-[var(--cta-shadow)] hover:opacity-90 transition-opacity outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] flex items-center"
+                className="px-5 h-[44px] rounded-full bg-[var(--cta-bg)] text-white text-sm font-semibold shadow-[var(--cta-shadow)] hover:opacity-90 transition-opacity outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] flex items-center"
               >
                 Connect Wallet
               </Link>

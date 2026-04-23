@@ -16,7 +16,7 @@ export default function NavLink({ to, label, onClick }: NavLinkProps) {
       onClick={onClick}
       aria-current={isActive ? "page" : undefined}
       className={[
-        "relative px-3 py-2 text-sm font-medium rounded-md transition-colors duration-150 outline-none",
+        "relative px-3 py-2 text-sm font-medium rounded-md transition-colors duration-150 outline-none min-h-[44px] flex items-center",
         "focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-1",
         isActive
           ? "text-[var(--accent)]"

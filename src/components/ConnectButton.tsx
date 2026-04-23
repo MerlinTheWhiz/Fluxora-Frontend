@@ -6,6 +6,7 @@ interface ConnectButtonProps {
 
 export default function ConnectButton({ onClick }: ConnectButtonProps) {
   const [isHovered, setIsHovered] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
 
   return (
     <button
@@ -21,15 +22,21 @@ export default function ConnectButton({ onClick }: ConnectButtonProps) {
         fontSize: "clamp(0.75rem, 2.5vw, 0.85rem)",
         fontWeight: 500,
         cursor: "pointer",
-        boxShadow: isHovered
+        boxShadow: isFocused
+          ? `0 0 0 2px #22d3ee, ${isHovered ? "0 0 22px 5px rgba(34,211,238,0.35), inset 0 0 16px rgba(34,211,238,0.14)" : "0 0 14px 3px rgba(34,211,238,0.2), inset 0 0 12px rgba(34,211,238,0.08)"}`
+          : isHovered
           ? "0 0 22px 5px rgba(34,211,238,0.35), inset 0 0 16px rgba(34,211,238,0.14)"
           : "0 0 14px 3px rgba(34,211,238,0.2), inset 0 0 12px rgba(34,211,238,0.08)",
         transition: "all 0.2s ease",
         outline: "none",
         letterSpacing: "0.01em",
+        minHeight: "44px",
+        minWidth: "44px",
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onFocus={() => setIsFocused(true)}
+      onBlur={() => setIsFocused(false)}
       onClick={onClick}
     >
       <svg
