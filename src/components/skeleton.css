@@ -1,96 +1,162 @@
-/* ── Skeleton tokens ─────────────────────────────────────────────────────── */
-:root {
-  --skeleton-base: #1a2438;
-  --skeleton-shine: #243048;
-}
+/* ── Skeleton Base Styles ──────────────────────────────────────────────── */
 
 .skeleton {
-  background: linear-gradient(
-    90deg,
-    var(--skeleton-base) 25%,
-    var(--skeleton-shine) 50%,
-    var(--skeleton-base) 75%
-  );
-  background-size: 200% 100%;
-  animation: shimmer 1.4s linear infinite;
-  border-radius: 6px;
+  /* Use design tokens for consistency */
+  background-color: var(--color-bg-tertiary);
+  border-radius: var(--radius-sm); /* 4px */
+  
+  /* Pulse animation per DESIGN_SPEC.md */
+  animation: pulse 2s ease-in-out infinite;
+  
+  /* Prevent text rendering */
+  color: transparent;
+  
+  /* Layout helper */
+  flex-shrink: 0;
+}
+
+/* Pulse animation (accessible for prefers-reduced-motion) */
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
 .skeleton-static {
-  background-color: var(--skeleton-base);
-  border-radius: 6px;
+  background-color: var(--color-bg-tertiary);
+  border-radius: var(--radius-sm); /* 4px */
+  
+  /* No animation for static placeholders */
+  animation: none;
+  opacity: 0.8;
 }
 
-/* ── Treasury overview layout ────────────────────────────────────────────── */
+/* ── Staggered Animation Delays for Cascading Effect ──────────────────── */
+
+.skeleton:nth-child(1) {
+  animation-delay: 0ms;
+}
+
+.skeleton:nth-child(2) {
+  animation-delay: 100ms;
+}
+
+.skeleton:nth-child(3) {
+  animation-delay: 200ms;
+}
+
+.skeleton:nth-child(4) {
+  animation-delay: 300ms;
+}
+
+.skeleton:nth-child(5) {
+  animation-delay: 400ms;
+}
+
+/* ── Treasury Overview Layout ────────────────────────────────────────────── */
+
 .treasury-loading-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  gap: var(--space-lg); /* 16px */
   flex-wrap: wrap;
 }
 
 .treasury-metrics {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 1rem;
-  margin-top: 1.5rem;
+  gap: var(--space-lg); /* 16px */
+  margin-top: var(--space-xl); /* 24px */
 }
 
 .metric-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 1.25rem;
+  background: var(--color-surface-default);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-lg); /* 12px */
+  padding: var(--space-xl); /* 24px */
   display: flex;
-  gap: 0.75rem;
+  gap: var(--space-md); /* 12px */
   align-items: center;
 }
 
-.metric-icon  { width: 40px; height: 40px; flex: 0 0 40px; border-radius: 8px; }
-.metric-text  { flex: 1; display: flex; flex-direction: column; gap: 8px; }
-.metric-label { height: 10px; width: 45%; }
-.metric-value { height: 18px; width: 65%; }
+.metric-icon {
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+  border-radius: var(--radius-md); /* 8px */
+}
 
-/* ── Recent streams table ────────────────────────────────────────────────── */
+.metric-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm); /* 8px */
+}
+
+.metric-label {
+  height: 12px;
+  width: 45%;
+}
+
+.metric-value {
+  height: 20px;
+  width: 65%;
+}
+
+/* ── Recent Streams Table ────────────────────────────────────────────────── */
+
 .recent-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 2rem;
-  margin-bottom: 0.75rem;
+  margin-top: var(--space-2xl); /* 32px */
+  margin-bottom: var(--space-md); /* 12px */
 }
 
 .recent-table {
   width: 100%;
   border-collapse: collapse;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
+  background: var(--color-surface-default);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-lg); /* 12px */
   overflow: hidden;
 }
 
 .recent-table th {
   text-align: left;
-  color: var(--muted);
-  font-size: 0.75rem;
-  font-weight: 600;
+  color: var(--color-text-muted);
+  font: var(--font-label-sm); /* 500 11px/14px */
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  padding: 1rem;
-  border-bottom: 1px solid var(--border);
+  padding: var(--space-lg); /* 16px */
+  border-bottom: 1px solid var(--color-border-default);
 }
 
 .recent-table td {
-  padding: 1rem;
-  border-bottom: 1px solid var(--border);
+  padding: var(--space-lg); /* 16px */
+  border-bottom: 1px solid var(--color-border-default);
   vertical-align: middle;
 }
 
-.stream-two-lines { display: flex; flex-direction: column; gap: 6px; }
-.action-placeholder { width: 28px; height: 28px; border-radius: 6px; }
+.stream-two-lines {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm); /* 8px */
+}
+
+.action-placeholder {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-md); /* 8px */
+}
 
 /* ── Responsive ──────────────────────────────────────────────────────────── */
+
 @media (max-width: 768px) {
   .treasury-metrics {
     grid-template-columns: 1fr 1fr;
@@ -105,5 +171,14 @@
 @media (max-width: 480px) {
   .treasury-metrics {
     grid-template-columns: 1fr;
+  }
+}
+
+/* ── Reduced Motion Support ──────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+    opacity: 0.7;
   }
 }

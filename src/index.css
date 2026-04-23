@@ -1,32 +1,20 @@
 @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
+@import "./design-tokens.css";
 
 :root {
-  --bg: #0a0e17;
-  --surface: #121a2a;
-  --surface-elevated: #0f1624;
-  --surface-raised: #151e2e;
-  --surface-highest: #192436;
-  --surface-switch: #1e2c40;
-  --danger: #ff4d4f;
-  --primary: #00b8d4;
-  --border: #1e2d42;
-  --text: #e8ecf4;
-  --muted: #6b7a94;
-  --accent: #00d4aa;
-  --accent-dim: #00a884;
-  --nf-bg: #1a1e29;
-  --nf-cyan: #4bc0d9;
-  --nf-muted: #a0aec0;
-  --navbar-bg: #0f1419;
-  --navbar-border: #1a2534;
-  --navbar-logo-color: #e8ecf4;
-  --navbar-link-color: #4a5565;
-  --navbar-icon-color: #9ca3af;
-  --navbar-icon-border: #374151;
-  --navbar-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  --cta-bg: #00d4aa;
-  --cta-shadow: 0 4px 12px rgba(0, 212, 170, 0.3);
+  --bg: var(--color-bg-primary);
+  --surface: var(--color-surface-default);
+  --surface-elevated: var(--color-surface-elevated);
+  --surface-raised: var(--color-surface-raised);
+  --surface-highest: var(--color-surface-highest);
+  --danger: var(--color-danger);
+  --primary: var(--color-accent-primary);
+  --border: var(--color-border-default);
+  --text: var(--color-text-primary);
+  --muted: var(--color-text-muted);
+  --accent: var(--color-accent-secondary);
+  --accent-dim: var(--color-accent-secondary-dark);
 }
 
 :root {
@@ -86,35 +74,81 @@ a:hover {
   color: var(--accent-dim);
 }
 
-button:focus,
-a:focus,
-input:focus {
-  outline: 2px solid var(--accent);
+/* ═══════════════════════════════════════════════════════════
+   FOCUS MANAGEMENT (Keyboard Navigation)
+   ═══════════════════════════════════════════════════════════ */
+
+/* :focus-visible provides keyboard-only focus ring (better UX than :focus) */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--color-focus);
   outline-offset: 2px;
 }
 
-nav a:hover {
-  color: var(--accent);
+/* Fallback for browsers that don't support :focus-visible */
+button:focus,
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
 }
 
-nav a:focus {
-  outline: 2px solid var(--accent);
-  outline-offset: 4px;
+/* ═══════════════════════════════════════════════════════════
+   NORMALIZE BUTTON BEHAVIOR
+   ═══════════════════════════════════════════════════════════ */
+
+button {
+  font-family: inherit;
+  font-size: inherit;
 }
 
-button:hover {
-  opacity: 0.9;
-  transform: translateY(-1px);
+/* Hide focus ring for mouse clicks (will show on Tab) */
+button:not(:focus-visible):focus,
+a:not(:focus-visible):focus,
+input:not(:focus-visible):focus {
+  outline: none;
 }
 
-button:active {
-  transform: translateY(0);
+/* ═══════════════════════════════════════════════════════════
+   REDUCED MOTION SUPPORT (Accessibility)
+   ═══════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  button:hover,
+  a:hover,
+  input:hover {
+    transition: none;
+  }
 }
 
-button[aria-label*="Switch"]:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-  background: rgba(0, 212, 170, 0.08);
+/* ═══════════════════════════════════════════════════════════
+   FORM FIELD FOCUS STATES
+   ═══════════════════════════════════════════════════════════ */
+
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  border-color: var(--color-accent-primary);
+  box-shadow: 0 0 0 3px rgba(0, 184, 212, 0.1);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LINK STYLES
+   ═══════════════════════════════════════════════════════════ */
+
+a:active {
+  opacity: 0.8;
 }
 
 button:has(+ button[aria-label*="Connect"]):hover,

@@ -3,17 +3,27 @@ interface Props {
 }
 
 export default function StatusPill({ status }: Props) {
-  const styles: Record<string, string> = {
-    Active: "bg-green-200/50 text-green-700",
-    Paused: "bg-orange-300/50 text-yellow-700",
-    Completed: "bg-blue-300/50 text-blue-600 ",
+  const styles: Record<string, React.CSSProperties> = {
+    Active: {
+      backgroundColor: "rgba(0, 212, 170, 0.1)",
+      color: "#00D4AA",
+    },
+    Paused: {
+      backgroundColor: "rgba(255, 185, 0, 0.1)",
+      color: "#FFB900",
+    },
+    Completed: {
+      backgroundColor: "rgba(0, 184, 212, 0.1)",
+      color: "#00B8D4",
+    },
   };
 
   return (
     <span
-      className={`px-3 py-1 rounded-md text-sm font-medium ${styles[status]}`}
+      className="px-3 py-1 rounded-full text-xs font-semibold tracking-wide"
+      style={styles[status]}
     >
-      {status}
+      {status.toUpperCase()}
     </span>
   );
 }

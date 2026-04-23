@@ -13,10 +13,11 @@ export default function Sidebar() {
       <div style={styles.content}>
         {/* Logo */}
         <button
-          onClick={() => navigate('/')}
-          style={styles.logoButton}
-          aria-label="Go to home"
-        >
+            onClick={() => navigate('/')}
+            style={styles.logoButton}
+            aria-label="Go to home"
+            className="outline-none"
+          >
           <div style={styles.logoIcon}>F</div>
           {!collapsed && <span style={styles.logoText}>Fluxora</span>}
         </button>
@@ -28,12 +29,13 @@ export default function Sidebar() {
           <NavLink
             to="/"
             end
+            className="outline-none"
             style={({ isActive }) => ({
               ...styles.navLink,
               ...(isActive && styles.activeLink),
             })}
-            onMouseEnter={(e) => !e.currentTarget.classList.contains('active') && (e.currentTarget.style.color = '#0ea5e9')}
-            onMouseLeave={(e) => !e.currentTarget.classList.contains('active') && (e.currentTarget.style.color = '#6b7280')}
+            onMouseEnter={(e) => !e.currentTarget.classList.contains('active') && (e.currentTarget.style.color = 'var(--color-text-secondary)')}
+            onMouseLeave={(e) => !e.currentTarget.classList.contains('active') && (e.currentTarget.style.color = 'var(--color-text-tertiary)')}
           >
             {({ isActive }) => (
               <>
@@ -51,12 +53,13 @@ export default function Sidebar() {
 
           <NavLink
             to="/streams"
+            className="outline-none"
             style={({ isActive }) => ({
               ...styles.navLink,
               ...(isActive && styles.activeLink),
             })}
-            onMouseEnter={(e) => !e.currentTarget.classList.contains('active') && (e.currentTarget.style.color = '#0ea5e9')}
-            onMouseLeave={(e) => !e.currentTarget.classList.contains('active') && (e.currentTarget.style.color = '#6b7280')}
+            onMouseEnter={(e) => !e.currentTarget.classList.contains('active') && (e.currentTarget.style.color = 'var(--color-text-secondary)')}
+            onMouseLeave={(e) => !e.currentTarget.classList.contains('active') && (e.currentTarget.style.color = 'var(--color-text-tertiary)')}
           >
             {({ isActive }) => (
               <>
@@ -76,12 +79,13 @@ export default function Sidebar() {
 
           <NavLink
             to="/recipient"
+            className="outline-none"
             style={({ isActive }) => ({
               ...styles.navLink,
               ...(isActive && styles.activeLink),
             })}
-            onMouseEnter={(e) => !e.currentTarget.classList.contains('active') && (e.currentTarget.style.color = '#0ea5e9')}
-            onMouseLeave={(e) => !e.currentTarget.classList.contains('active') && (e.currentTarget.style.color = '#6b7280')}
+            onMouseEnter={(e) => !e.currentTarget.classList.contains('active') && (e.currentTarget.style.color = 'var(--color-text-secondary)')}
+            onMouseLeave={(e) => !e.currentTarget.classList.contains('active') && (e.currentTarget.style.color = 'var(--color-text-tertiary)')}
           >
             {({ isActive }) => (
               <>
@@ -101,8 +105,8 @@ export default function Sidebar() {
           <a 
             href="#" 
             style={styles.utilityLink}
-            onMouseEnter={(e) => e.currentTarget.style.color = '#0ea5e9'}
-            onMouseLeave={(e) => e.currentTarget.style.color = '#6b7280'}
+            onMouseEnter={(e) => e.currentTarget.style.color = 'var(--color-text-secondary)'}
+            onMouseLeave={(e) => e.currentTarget.style.color = 'var(--color-text-tertiary)'}
           >
             <svg style={styles.icon} viewBox="0 0 20 20" fill="none">
               <g clipPath="url(#clip0_1_1594)">
@@ -119,8 +123,8 @@ export default function Sidebar() {
           <a 
             href="#" 
             style={styles.utilityLink}
-            onMouseEnter={(e) => e.currentTarget.style.color = '#0ea5e9'}
-            onMouseLeave={(e) => e.currentTarget.style.color = '#6b7280'}
+            onMouseEnter={(e) => e.currentTarget.style.color = 'var(--color-text-secondary)'}
+            onMouseLeave={(e) => e.currentTarget.style.color = 'var(--color-text-tertiary)'}
           >
             <svg style={styles.icon} viewBox="0 0 20 20" fill="none">
               <g clipPath="url(#clip0_1_1603)">
@@ -140,8 +144,9 @@ export default function Sidebar() {
             onClick={() => setCollapsed(!collapsed)}
             style={styles.collapseButton}
             aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-            onMouseEnter={(e) => e.currentTarget.style.color = '#0ea5e9'}
-            onMouseLeave={(e) => e.currentTarget.style.color = '#6b7280'}
+            className="outline-none"
+            onMouseEnter={(e) => e.currentTarget.style.color = 'var(--color-text-secondary)'}
+            onMouseLeave={(e) => e.currentTarget.style.color = 'var(--color-text-tertiary)'}
           >
             <svg
               style={{
@@ -169,11 +174,10 @@ const styles: Record<string, React.CSSProperties> = {
     top: 0,
     width: '255.99px',
     height: '100vh',
-    backgroundColor: '#FFFFFF',
-    borderRight: '0.69px solid #E5E7EB',
+    backgroundColor: 'var(--color-bg-primary)',
+    borderRight: '1px solid var(--color-border-default)',
     transition: 'width 0.3s ease',
     zIndex: 100,
-    opacity: 1,
   },
   content: {
     display: 'flex',
@@ -196,8 +200,8 @@ const styles: Record<string, React.CSSProperties> = {
   logoIcon: {
     width: '32px',
     height: '32px',
-    background: 'linear-gradient(180deg, #00B8D4 0%, #0097A7 100%)',
-    borderRadius: '8px',
+    background: 'linear-gradient(180deg, var(--color-accent-primary) 0%, var(--color-accent-primary-dark) 100%)',
+    borderRadius: 'var(--radius-md)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -205,13 +209,12 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: '18px',
     fontWeight: 'bold',
     flexShrink: 0,
-    opacity: 1,
-    boxShadow: '0px 4px 6px -4px rgba(0, 184, 212, 0.3), 0px 10px 15px -3px rgba(0, 184, 212, 0.3)',
+    boxShadow: 'var(--shadow-accent-primary)',
   },
   logoText: {
     fontSize: '18px',
     fontWeight: '600',
-    color: '#1f2937',
+    color: 'var(--color-text-primary)',
     whiteSpace: 'nowrap',
   },
   nav: {
@@ -225,19 +228,18 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     alignItems: 'center',
     gap: '12px',
-    padding: '10px 24px',
-    color: '#6b7280',
+    padding: '12px 24px',
+    color: 'var(--color-text-tertiary)',
     textDecoration: 'none',
-    fontSize: '15px',
-    fontWeight: '500',
-    transition: 'all 0.2s',
-  },
-  navLinkHover: {
-    color: '#0ea5e9',
+    fontSize: '14px',
+    lineHeight: '20px',
+    fontWeight: '400',
+    height: '44px',
+    transition: 'var(--transition-base)',
   },
   activeLink: {
-    backgroundColor: '#dbeafe',
-    color: '#0ea5e9',
+    backgroundColor: 'rgba(0, 212, 170, 0.08)',
+    color: 'var(--color-accent-secondary)',
   },
   activeBar: {
     position: 'absolute',
@@ -245,7 +247,7 @@ const styles: Record<string, React.CSSProperties> = {
     top: 0,
     bottom: 0,
     width: '3px',
-    backgroundColor: '#0ea5e9',
+    backgroundColor: 'var(--color-accent-secondary)',
   },
   icon: {
     width: '20px',
@@ -260,7 +262,7 @@ const styles: Record<string, React.CSSProperties> = {
     gap: '4px',
     paddingTop: '24px',
     paddingBottom: '16px',
-    borderTop: '1px solid #e5e7eb',
+    borderTop: '1px solid var(--color-border-default)',
     marginTop: 'auto',
   },
   utilityLink: {
@@ -268,9 +270,9 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: 'center',
     gap: '12px',
     padding: '8px 24px',
-    color: '#6b7280',
+    color: 'var(--color-text-tertiary)',
     textDecoration: 'none',
-    fontSize: '15px',
+    fontSize: '14px',
     fontWeight: '500',
     transition: 'color 0.2s',
     cursor: 'pointer',
@@ -280,8 +282,8 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: 'center',
     gap: '12px',
     padding: '12px 24px',
-    color: '#6b7280',
-    fontSize: '15px',
+    color: 'var(--color-text-tertiary)',
+    fontSize: '14px',
     fontWeight: '500',
     background: 'none',
     border: 'none',
@@ -292,7 +294,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   divider: {
     height: '1px',
-    backgroundColor: '#e5e7eb',
+    backgroundColor: 'var(--color-border-default)',
     margin: '8px 0',
   },
 };

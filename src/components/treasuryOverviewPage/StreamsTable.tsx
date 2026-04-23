@@ -4,15 +4,23 @@ import { Stream } from "./Stream";
 
 export default function StreamsTable() {
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-left">
+    <div className="overflow-x-auto rounded-lg" style={{ border: "1px solid var(--color-border-default)" }}>
+      <table className="w-full text-left border-collapse">
         <thead>
-          <tr className="text-gray-500 text-sm border-b border-gray-200">
-            <th className="py-2">STREAM</th>
-            <th className="py-2">RECIPIENT</th>
-            <th className="py-2">RATE</th>
-            <th className="py-2">STATUS</th>
-            <th className="py-2">ACTION</th>
+          <tr 
+            style={{ 
+              backgroundColor: "var(--color-surface-raised)",
+              color: "var(--color-text-muted)",
+              fontSize: "12px",
+              fontWeight: "600",
+              letterSpacing: "0.05em",
+            }}
+          >
+            <th className="py-4 px-3">STREAM</th>
+            <th className="py-4 px-3">RECIPIENT</th>
+            <th className="py-4 px-3">RATE</th>
+            <th className="py-4 px-3">STATUS</th>
+            <th className="py-4 px-3">ACTION</th>
           </tr>
         </thead>
 
