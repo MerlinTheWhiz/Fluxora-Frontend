@@ -1,6 +1,7 @@
 import { useRef } from "react";
-import type { CSSProperties, MouseEvent } from "react";
+import type { MouseEvent } from "react";
 import { useModalAccessibility } from "./useModalAccessibility";
+import styles from "./ConnectWalletModal.module.css";
 
 interface ConnectWalletModalProps {
   isOpen: boolean;
@@ -64,9 +65,9 @@ export default function ConnectWalletModal({
   ];
 
   return (
-    <div style={styles.backdrop} onClick={handleBackdropClick}>
+    <div className={styles.backdrop} onClick={handleBackdropClick}>
       <div
-        style={styles.modal}
+        className={styles.modal}
         ref={modalRef}
         role="dialog"
         aria-modal="true"
@@ -75,8 +76,7 @@ export default function ConnectWalletModal({
         tabIndex={-1}
       >
         <button
-          ref={firstFocusableRef}
-          style={styles.closeButton}
+          className={`${styles.closeButton} ${styles.focusable}`}
           onClick={onClose}
           aria-label="Close connect wallet modal"
           type="button"
@@ -84,43 +84,38 @@ export default function ConnectWalletModal({
           ✕
         </button>
 
-        <div style={styles.header}>
-          <h2 id="connect-wallet-title" style={styles.title}>
+        <div className={styles.header}>
+          <h2 id="connect-wallet-title" className={styles.title}>
             Connect wallet
           </h2>
-          <p id="connect-wallet-description" style={styles.subtitle}>
+          <p id="connect-wallet-description" className={styles.subtitle}>
             Connect your Stellar wallet to use Fluxora.
           </p>
         </div>
 
-        <div style={styles.walletList}>
-          {walletOptions.map((wallet) => (
+        <div className={styles.walletList}>
+          {walletOptions.map((wallet, index) => (
             <button
               key={wallet.id}
-              style={styles.walletOption}
+              ref={index === 0 ? firstFocusableRef : undefined}
+              className={`${styles.walletOption} ${styles.focusable}`}
               onClick={wallet.onClick}
               type="button"
               aria-label={wallet.ariaLabel}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.background = "#1e2d42";
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.background = "#121a2a";
-              }}
             >
-              <div style={styles.walletIcon}>{wallet.icon}</div>
-              <div style={styles.walletInfo}>
-                <div style={styles.walletName}>{wallet.name}</div>
-                <div style={styles.walletDescription}>{wallet.description}</div>
+              <div className={styles.walletIcon}>{wallet.icon}</div>
+              <div className={styles.walletInfo}>
+                <div className={styles.walletName}>{wallet.name}</div>
+                <div className={styles.walletDescription}>{wallet.description}</div>
               </div>
-              <div style={styles.chevron}>→</div>
+              <div className={styles.chevron} aria-hidden="true">→</div>
             </button>
           ))}
         </div>
 
-        <div style={styles.footer}>
+        <div className={styles.footer}>
           By connecting, you agree to Fluxora's{" "}
-          <a href="/terms" style={styles.termsLink}>
+          <a href="/legal/terms" className={`${styles.termsLink} ${styles.focusable}`}>
             Terms of Service
           </a>
           .
@@ -129,118 +124,3 @@ export default function ConnectWalletModal({
     </div>
   );
 }
-
-const styles: Record<string, CSSProperties> = {
-  backdrop: {
-    position: "fixed",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    background: "rgba(0, 0, 0, 0.75)",
-    backdropFilter: "blur(4px)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: 1000,
-    padding: "1rem",
-  },
-  modal: {
-    position: "relative",
-    background: "#0a0e17",
-    borderRadius: 16,
-    padding: "clamp(1.25rem, 5vw, 2rem)",
-    maxWidth: 480,
-    width: "100%",
-    boxShadow: "0 20px 60px rgba(0, 0, 0, 0.5)",
-    border: "1px solid #1e2d42",
-    maxHeight: "90vh",
-    overflowY: "auto",
-  },
-  closeButton: {
-    position: "absolute",
-    top: "1.5rem",
-    right: "1.5rem",
-    background: "transparent",
-    border: "none",
-    color: "#6b7a94",
-    fontSize: "1.5rem",
-    cursor: "pointer",
-    padding: "0.25rem",
-    lineHeight: 1,
-    transition: "color 0.2s",
-  },
-  header: {
-    marginBottom: "1.5rem",
-  },
-  title: {
-    margin: 0,
-    fontSize: "clamp(1.25rem, 4vw, 1.75rem)",
-    fontWeight: 700,
-    color: "#ffffff",
-    marginBottom: "0.5rem",
-  },
-  subtitle: {
-    margin: 0,
-    fontSize: "clamp(0.85rem, 2.5vw, 0.95rem)",
-    color: "#6b7a94",
-    lineHeight: 1.5,
-  },
-  walletList: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "0.75rem",
-    marginBottom: "1.5rem",
-  },
-  walletOption: {
-    display: "flex",
-    alignItems: "center",
-    gap: "clamp(0.75rem, 3vw, 1rem)",
-    background: "#121a2a",
-    border: "1px solid #1e2d42",
-    borderRadius: 12,
-    padding: "clamp(0.75rem, 3vw, 1rem)",
-    cursor: "pointer",
-    transition: "all 0.2s",
-    textAlign: "left",
-    width: "100%",
-  },
-  walletIcon: {
-    fontSize: "clamp(1.5rem, 5vw, 2rem)",
-    flexShrink: 0,
-    width: "clamp(40px, 12vw, 48px)",
-    height: "clamp(40px, 12vw, 48px)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  walletInfo: {
-    flex: 1,
-  },
-  walletName: {
-    fontSize: "clamp(0.9rem, 2.5vw, 1rem)",
-    fontWeight: 700,
-    color: "#ffffff",
-    marginBottom: "0.25rem",
-  },
-  walletDescription: {
-    fontSize: "clamp(0.75rem, 2vw, 0.875rem)",
-    color: "#6b7a94",
-    lineHeight: 1.4,
-  },
-  chevron: {
-    fontSize: "1.25rem",
-    color: "#6b7a94",
-    flexShrink: 0,
-  },
-  footer: {
-    fontSize: "0.8125rem",
-    color: "#6b7a94",
-    textAlign: "center",
-    lineHeight: 1.5,
-  },
-  termsLink: {
-    color: "#00d4aa",
-    textDecoration: "none",
-  },
-};

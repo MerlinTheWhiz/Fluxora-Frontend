@@ -27,7 +27,7 @@ function FluxoraLogo({ connected }: { connected: boolean }) {
     <Link
       to={connected ? "/app" : "/"}
       aria-label="Fluxora home"
-      className="flex items-center gap-2 outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] rounded-md"
+      className="flex items-center gap-2 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-focus)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--navbar-bg)]"
     >
       <svg width="34" height="34" viewBox="0 0 46 46" fill="none" aria-hidden="true">
         <defs>
@@ -85,6 +85,8 @@ export default function AppNavbar({ onThemeToggle, theme = "dark" }: AppNavbarPr
   const { connected, address, network, disconnect } = useWallet();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [connecting, setConnecting] = useState(false);
+  const focusRingClassName =
+    "outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-focus)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--navbar-bg)]";
 
   // Simulate a brief "connecting" state on first mount when wallet restores session
   useEffect(() => {
@@ -123,7 +125,7 @@ export default function AppNavbar({ onThemeToggle, theme = "dark" }: AppNavbarPr
           <button
             onClick={onThemeToggle}
             aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
-            className="flex items-center justify-center w-9 h-9 rounded-full border border-[var(--navbar-icon-border)] text-[var(--navbar-icon-color)] hover:border-[var(--accent)]/50 hover:text-[var(--accent)] transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+            className={`flex items-center justify-center w-9 h-9 rounded-full border border-[var(--navbar-icon-border)] text-[var(--navbar-icon-color)] hover:border-[var(--accent)]/50 hover:text-[var(--accent)] transition-colors ${focusRingClassName}`}
           >
             {theme === "light" ? <Moon size={16} aria-hidden="true" /> : <Sun size={16} aria-hidden="true" />}
           </button>
@@ -137,7 +139,7 @@ export default function AppNavbar({ onThemeToggle, theme = "dark" }: AppNavbarPr
             <Link
               to="/connect-wallet"
               aria-label="Connect your Stellar wallet"
-              className="px-5 h-9 rounded-full bg-[var(--cta-bg)] text-white text-sm font-semibold shadow-[var(--cta-shadow)] hover:opacity-90 transition-opacity outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] flex items-center"
+              className={`px-5 h-9 rounded-full bg-[var(--cta-bg)] text-white text-sm font-semibold shadow-[var(--cta-shadow)] hover:opacity-90 transition-opacity flex items-center ${focusRingClassName}`}
             >
               Connect Wallet
             </Link>
@@ -146,7 +148,7 @@ export default function AppNavbar({ onThemeToggle, theme = "dark" }: AppNavbarPr
 
         {/* Mobile: hamburger */}
         <button
-          className="md:hidden flex items-center justify-center w-10 h-10 rounded-md text-[var(--navbar-icon-color)] hover:text-[var(--text)] transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+          className={`md:hidden flex items-center justify-center w-10 h-10 rounded-md text-[var(--navbar-icon-color)] hover:text-[var(--text)] transition-colors ${focusRingClassName}`}
           onClick={() => setMobileOpen((o) => !o)}
           aria-label={mobileOpen ? "Close navigation menu" : "Open navigation menu"}
           aria-expanded={mobileOpen}
@@ -172,7 +174,7 @@ export default function AppNavbar({ onThemeToggle, theme = "dark" }: AppNavbarPr
             <button
               onClick={onThemeToggle}
               aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
-              className="flex items-center justify-center w-9 h-9 rounded-full border border-[var(--navbar-icon-border)] text-[var(--navbar-icon-color)] hover:border-[var(--accent)]/50 hover:text-[var(--accent)] transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+              className={`flex items-center justify-center w-9 h-9 rounded-full border border-[var(--navbar-icon-border)] text-[var(--navbar-icon-color)] hover:border-[var(--accent)]/50 hover:text-[var(--accent)] transition-colors ${focusRingClassName}`}
             >
               {theme === "light" ? <Moon size={16} aria-hidden="true" /> : <Sun size={16} aria-hidden="true" />}
             </button>
@@ -186,7 +188,7 @@ export default function AppNavbar({ onThemeToggle, theme = "dark" }: AppNavbarPr
                 to="/connect-wallet"
                 onClick={closeMobile}
                 aria-label="Connect your Stellar wallet"
-                className="px-5 h-9 rounded-full bg-[var(--cta-bg)] text-white text-sm font-semibold shadow-[var(--cta-shadow)] hover:opacity-90 transition-opacity outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] flex items-center"
+                className={`px-5 h-9 rounded-full bg-[var(--cta-bg)] text-white text-sm font-semibold shadow-[var(--cta-shadow)] hover:opacity-90 transition-opacity flex items-center ${focusRingClassName}`}
               >
                 Connect Wallet
               </Link>
