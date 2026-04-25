@@ -8,6 +8,7 @@ import ConnectWalletModal from '../components/ConnectWalletModal';
 import ToastNotification, {
   type ToastVariant,
 } from "../components/ToastNotification";
+import "../design-tokens.css";
 
 const ONBOARDING_KEY = 'fluxora_onboarding_dismissed';
 
@@ -109,6 +110,8 @@ export default function Dashboard() {
   if (loading) return <TreasuryOverviewLoading />;
 
   const hasStreams = streams.length > 0;
+  const primaryCtaClassName = "ui-primary-cta";
+  const compactPrimaryCtaClassName = "ui-primary-cta ui-primary-cta--compact";
 
   return (
     <div>
@@ -131,7 +134,7 @@ export default function Dashboard() {
           </div>
           <button
             type="button"
-            style={connectBannerBtnStyle}
+            className={compactPrimaryCtaClassName}
             onClick={() => setIsWalletModalOpen(true)}
             aria-label="Connect Stellar wallet"
           >
@@ -160,7 +163,7 @@ export default function Dashboard() {
           <RecentStreams streams={streams} />
           <button
             type="button"
-            style={createBtnStyle}
+            className={primaryCtaClassName}
             onClick={() => setIsModalOpen(true)}
             aria-label="Create stream"
           >
@@ -218,33 +221,6 @@ const walletBannerStyle: React.CSSProperties = {
   padding: '0.75rem 1rem',
   marginTop: '0.75rem',
   marginBottom: '0.25rem',
-};
-
-const connectBannerBtnStyle: React.CSSProperties = {
-  background: 'var(--accent)',
-  color: '#000',
-  border: 'none',
-  borderRadius: '6px',
-  padding: '0.375rem 0.875rem',
-  fontSize: '0.8125rem',
-  fontWeight: 600,
-  cursor: 'pointer',
-  whiteSpace: 'nowrap',
-};
-
-const createBtnStyle: React.CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-  gap: "0.5rem",
-  background: "var(--accent)",
-  color: "#ffffff",
-  border: "none",
-  padding: "0.625rem 1.25rem",
-  borderRadius: "8px",
-  fontWeight: 600,
-  fontSize: "1rem",
-  cursor: "pointer",
-  boxShadow: "0 4px 24px rgba(0, 212, 170, 0.4)",
 };
 
 const cardGrid: React.CSSProperties = {
