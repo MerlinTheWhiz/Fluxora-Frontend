@@ -3,6 +3,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import CreateStreamModal from "../components/CreateStreamModal";
 import EmptyState from "../components/EmptyState";
 import StreamCreatedModal from "../components/Streams/StreamCreatedModal";
+import ToastNotification, {
+  type ToastVariant,
+} from "../components/ToastNotification";
 import StreamsLoading from "../components/StreamsLoading";
 import {
   getStreamRecord,
@@ -496,7 +499,10 @@ export default function Streams() {
     id: "STR-NEW",
     url: "https://fluxora.io/stream/STR-NEW",
   });
-  const [toastMessage, setToastMessage] = useState("");
+  const [toast, setToast] = useState<{
+    message: string;
+    variant: ToastVariant;
+  } | null>(null);
   const walletConnected = true;
 
   useEffect(() => {
@@ -505,11 +511,11 @@ export default function Streams() {
   }, []);
 
   useEffect(() => {
-    if (!toastMessage) return undefined;
+    if (!toast) return undefined;
 
-    const timer = window.setTimeout(() => setToastMessage(""), 2200);
+    const timer = window.setTimeout(() => setToast(null), 4000);
     return () => window.clearTimeout(timer);
-  }, [toastMessage]);
+  }, [toast]);
 
   if (loading) return <StreamsLoading />;
 
@@ -556,9 +562,16 @@ export default function Streams() {
   const handleCopyRecipient = async (stream: StreamRecord) => {
     try {
       await navigator.clipboard.writeText(stream.recipientAddress);
-      setToastMessage(`Recipient for ${stream.name} copied.`);
+      setToast({
+        message: `Recipient for ${stream.name} copied to your clipboard.`,
+        variant: "success",
+      });
     } catch {
-      setToastMessage("Clipboard access is unavailable in this browser.");
+      setToast({
+        message:
+          "Clipboard access is unavailable in this browser. Copy the address manually instead.",
+        variant: "error",
+      });
     }
   };
 
@@ -730,10 +743,12 @@ export default function Streams() {
         }}
       />
 
-      {toastMessage ? (
-        <div className="streams-toast" role="status" aria-live="polite">
-          {toastMessage}
-        </div>
+      {toast ? (
+        <ToastNotification
+          message={toast.message}
+          variant={toast.variant}
+          onClose={() => setToast(null)}
+        />
       ) : null}
     </div>
   );
