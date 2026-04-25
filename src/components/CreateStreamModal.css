@@ -91,16 +91,17 @@
 
 /* Next: teal gradient to match progress accent */
 .btn-next {
-  background: linear-gradient(135deg, #00B8D4, #0097A7);
+  background: linear-gradient(135deg, #00b8d4, #0097a7);
   color: #ffffff;
   border: none;
 }
 .modal-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   margin-bottom: 1.25rem;
   flex-shrink: 0;
+  gap: 1rem;
 }
 
 .modal-header h2 {
@@ -109,20 +110,37 @@
   margin: 0;
 }
 
+.modal-description {
+  margin: 0.35rem 0 0;
+  color: var(--muted);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
 .close-button {
   background: none;
   border: none;
   color: var(--muted);
   font-size: 1.25rem;
   cursor: pointer;
-  padding: 0;
+  padding: 0.25rem;
   line-height: 1;
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 9999px;
+  flex-shrink: 0;
 }
 .close-button:hover {
   color: var(--text);
+}
+.close-button:focus-visible {
+  outline: none;
+  box-shadow: var(
+    --focus-ring,
+    0 0 0 2px var(--color-bg-primary),
+    0 0 0 4px var(--color-focus)
+  );
 }
 
 /* Progress Tracker */
@@ -138,7 +156,7 @@
 .progress-line {
   position: absolute;
   top: 16px;
-  left: .5rem;
+  left: 0.5rem;
   right: 3.5rem;
   height: 2px;
   background: var(--border);
