@@ -27,7 +27,7 @@ export default function StatusPill({ status }: Props) {
       style={{ backgroundColor: background, color }}
       className="inline-flex items-center rounded-md px-3 py-1 text-sm font-medium"
     >
-      {status}
+      {status.toUpperCase()}
     </span>
   );
 }

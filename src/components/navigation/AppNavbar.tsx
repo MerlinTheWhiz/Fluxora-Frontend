@@ -29,7 +29,7 @@ function FluxoraLogo({ connected }: { connected: boolean }) {
     <Link
       to={connected ? "/app" : "/"}
       aria-label="Fluxora home"
-      className="flex items-center gap-2 outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] rounded-md"
+      className="flex items-center gap-2 outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-focus)] rounded-md"
     >
       <svg width="34" height="34" viewBox="0 0 46 46" fill="none" aria-hidden="true">
         <defs>

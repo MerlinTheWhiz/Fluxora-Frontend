@@ -1,5 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
+@import "./design-tokens.css";
 
 :root {
   --bg: #0a0e17;
@@ -157,8 +158,13 @@ textarea:focus-visible,
   box-shadow: var(--focus-ring-shadow-inset);
 }
 
-nav a:hover {
-  color: var(--accent);
+/* ═══════════════════════════════════════════════════════════
+   NORMALIZE BUTTON BEHAVIOR
+   ═══════════════════════════════════════════════════════════ */
+
+button {
+  font-family: inherit;
+  font-size: inherit;
 }
 
 nav a:focus-visible {

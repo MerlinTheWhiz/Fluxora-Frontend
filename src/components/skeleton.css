@@ -60,71 +60,100 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  gap: var(--space-lg); /* 16px */
   flex-wrap: wrap;
 }
 
 .treasury-metrics {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 1rem;
-  margin-top: 1.5rem;
+  gap: var(--space-lg); /* 16px */
+  margin-top: var(--space-xl); /* 24px */
 }
 
 .metric-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 1.25rem;
+  background: var(--color-surface-default);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-lg); /* 12px */
+  padding: var(--space-xl); /* 24px */
   display: flex;
-  gap: 0.75rem;
+  gap: var(--space-md); /* 12px */
   align-items: center;
 }
 
-.metric-icon  { width: 40px; height: 40px; flex: 0 0 40px; border-radius: 8px; }
-.metric-text  { flex: 1; display: flex; flex-direction: column; gap: 8px; }
-.metric-label { height: 10px; width: 45%; }
-.metric-value { height: 18px; width: 65%; }
+.metric-icon {
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+  border-radius: var(--radius-md); /* 8px */
+}
 
-/* ── Recent streams table ────────────────────────────────────────────────── */
+.metric-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm); /* 8px */
+}
+
+.metric-label {
+  height: 12px;
+  width: 45%;
+}
+
+.metric-value {
+  height: 20px;
+  width: 65%;
+}
+
+/* ── Recent Streams Table ────────────────────────────────────────────────── */
+
 .recent-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 2rem;
-  margin-bottom: 0.75rem;
+  margin-top: var(--space-2xl); /* 32px */
+  margin-bottom: var(--space-md); /* 12px */
 }
 
 .recent-table {
   width: 100%;
   border-collapse: collapse;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
+  background: var(--color-surface-default);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-lg); /* 12px */
   overflow: hidden;
 }
 
 .recent-table th {
   text-align: left;
-  color: var(--muted);
-  font-size: 0.75rem;
-  font-weight: 600;
+  color: var(--color-text-muted);
+  font: var(--font-label-sm); /* 500 11px/14px */
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  padding: 1rem;
-  border-bottom: 1px solid var(--border);
+  padding: var(--space-lg); /* 16px */
+  border-bottom: 1px solid var(--color-border-default);
 }
 
 .recent-table td {
-  padding: 1rem;
-  border-bottom: 1px solid var(--border);
+  padding: var(--space-lg); /* 16px */
+  border-bottom: 1px solid var(--color-border-default);
   vertical-align: middle;
 }
 
-.stream-two-lines { display: flex; flex-direction: column; gap: 6px; }
-.action-placeholder { width: 28px; height: 28px; border-radius: 6px; }
+.stream-two-lines {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm); /* 8px */
+}
+
+.action-placeholder {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-md); /* 8px */
+}
 
 /* ── Responsive ──────────────────────────────────────────────────────────── */
+
 @media (max-width: 768px) {
   .treasury-metrics {
     grid-template-columns: 1fr 1fr;
