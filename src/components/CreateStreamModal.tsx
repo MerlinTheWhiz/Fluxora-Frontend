@@ -1,6 +1,6 @@
-import { useState, useRef } from "react";
-import "./CreateStreamModal.css";
-import { useModalAccessibility } from "./useModalAccessibility";
+import { useState, useEffect, useRef } from 'react';
+import './CreateStreamModal.css';
+import { InputField } from './InputField';
 
 function maskAddress(addr: string): string {
   const t = addr.trim();
@@ -40,8 +40,12 @@ export default function CreateStreamModal({
   const [cliffDate, setCliffDate] = useState("");
   const [currentStep, setCurrentStep] = useState(1);
   const [error, setError] = useState<string | null>(null);
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
   const modalRef = useRef<HTMLDivElement>(null);
-  const recipientInputRef = useRef<HTMLInputElement>(null);
+
+  const handleBlur = (field: string) => {
+    setTouched(prev => ({ ...prev, [field]: true }));
+  };
   const [isSubmitting, setIsSubmitting] = useState(false);
   const userDeposit = 200.0;
   const requiredDeposit = (
@@ -75,61 +79,69 @@ export default function CreateStreamModal({
     return true;
   };
 
+  const validateStep2 = (): boolean => {
+    // Mark all active step-2 fields as touched
+    const touchedFields: Record<string, boolean> = {
+      accrualRate: true,
+      duration: true,
+    };
+    if (startTimeOption === 'custom') {
+      touchedFields.customStartDate = true;
+    }
+    if (cliffEnabled) {
+      touchedFields.cliffDate = true;
+    }
+    setTouched(prev => ({ ...prev, ...touchedFields }));
+
+    // Validate accrual rate
+    if (!accrualRate || parseFloat(accrualRate) <= 0) {
+      return false;
+    }
+    // Validate duration
+    if (!duration || parseFloat(duration) <= 0) {
+      return false;
+    }
+    // Validate deposit balance
+    if (parseFloat(requiredDeposit) > userDeposit) {
+      return false;
+    }
+    // Validate custom start date
+    if (startTimeOption === 'custom') {
+      if (!customStartDate) {
+        return false;
+      }
+      const selectedDate = new Date(customStartDate);
+      if (selectedDate < new Date()) {
+        return false;
+      }
+    }
+    // Validate cliff date
+    if (cliffEnabled) {
+      if (!cliffDate) {
+        return false;
+      }
+      const selectedCliffDate = new Date(cliffDate);
+      if (selectedCliffDate < new Date(new Date().setHours(0, 0, 0, 0))) {
+        return false;
+      }
+      if (startTimeOption === 'custom' && customStartDate) {
+        if (selectedCliffDate < new Date(customStartDate)) {
+          return false;
+        }
+      }
+    }
+    return true;
+  };
+
   const handleNext = () => {
     if (currentStep === 1) {
+      setTouched(prev => ({ ...prev, recipient: true, depositAmount: true }));
       if (!validateStep1()) return;
       setCurrentStep(2);
       return;
     }
     if (currentStep === 2) {
-      if (!accrualRate || parseFloat(accrualRate) <= 0) {
-        setError("Stream rate must be greater than 0");
-        return;
-      }
-      if (!duration || parseFloat(duration) <= 0) {
-        setError("Stream duration must be greater than 0");
-        return;
-      }
-      if (parseFloat(requiredDeposit) > userDeposit) {
-        setError(
-          `Required deposit exceeds your current balance of ${userDeposit} USDC`,
-        );
-        return;
-      }
-
-      // Date validation
-      if (startTimeOption === "custom") {
-        if (!customStartDate) {
-          setError("Please select a custom start date");
-          return;
-        }
-        const selectedDate = new Date(customStartDate);
-        if (selectedDate < new Date()) {
-          setError("Start time cannot be in the past");
-          return;
-        }
-      }
-
-      if (cliffEnabled) {
-        if (!cliffDate) {
-          setError("Please select a cliff date");
-          return;
-        }
-        const selectedCliffDate = new Date(cliffDate);
-        if (selectedCliffDate < new Date(new Date().setHours(0, 0, 0, 0))) {
-          setError("Cliff date cannot be in the past");
-          return;
-        }
-
-        if (startTimeOption === "custom" && customStartDate) {
-          if (selectedCliffDate < new Date(customStartDate)) {
-            setError("Cliff date cannot be before the start date");
-            return;
-          }
-        }
-      }
-
-      setError(null);
+      if (!validateStep2()) return;
       setCurrentStep(3);
     } else if (currentStep === 3) {
       setIsSubmitting(true);
@@ -211,195 +223,303 @@ export default function CreateStreamModal({
               }}
             />
           </div>
-          <div
-            className={`step-item ${currentStep === 1 ? "active" : currentStep > 1 ? "completed" : ""}`}
-          >
-            <div className="step-circle">
-              {currentStep > 1 ? (
-                <svg
-                  width="16"
-                  height="16"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={3}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-              ) : (
-                "1"
-              )}
-            </div>
-            <div className="step-label">
-              Recipient &<br />
-              amount
-            </div>
+          <div className={`step-item ${currentStep === 1 ? 'active' : currentStep > 1 ? 'completed' : ''}`}>
+            <div className="step-circle">{currentStep > 1 ? (
+              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            ) : '1'}</div>
+            <div className="step-label">Recipient &<br />amount</div>
           </div>
-          <div
-            className={`step-item ${currentStep === 2 ? "active" : currentStep > 2 ? "completed" : ""}`}
-          >
-            <div className="step-circle">
-              {currentStep > 2 ? (
-                <svg
-                  width="16"
-                  height="16"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={3}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-              ) : (
-                "2"
-              )}
-            </div>
-            <div className="step-label">
-              Rate &<br />
-              schedule
-            </div>
+          <div className={`step-item ${currentStep === 2 ? 'active' : currentStep > 2 ? 'completed' : ''}`}>
+            <div className="step-circle">{currentStep > 2 ? (
+              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            ) : '2'}</div>
+            <div className="step-label">Rate &<br />schedule</div>
           </div>
-          <div className={`step-item ${currentStep === 3 ? "active" : ""}`}>
+          <div className={`step-item ${currentStep === 3 ? 'active' : ''}`}>
             <div className="step-circle">3</div>
-            <div className="step-label">
-              Review &<br />
-              create
-            </div>
+            <div className="step-label">Review &<br />create</div>
           </div>
         </div>
 
         <div className="modal-body-scroll">
-          {currentStep === 1 && (
-            <>
-              <hr className="divider" />
-              <div className="section-header">
-                <h3>Recipient & amount</h3>
-                <p>Set who receives the stream and how much USDC to lock.</p>
-              </div>
-              {error && (
-                <div className="form-error" role="alert">
-                  {error}
-                </div>
-              )}
-              <div className="form-group">
-                <label htmlFor="create-stream-recipient" className="form-label">
-                  Recipient{" "}
-                  <span className="required" aria-hidden="true">
-                    *
-                  </span>
-                </label>
-                <div className="input-container">
-                  <div className="input-icon" aria-hidden="true">
-                    <svg
-                      width="20"
-                      height="20"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={2}
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                      />
-                    </svg>
-                  </div>
-                  <input
-                    ref={recipientInputRef}
+        {currentStep === 1 && (
+          <>
+            <hr className="divider" />
+            <div className="section-header">
+              <h3>Recipient & amount</h3>
+              <p>Set who receives the stream and how much USDC to lock.</p>
+            </div>
+            {(() => {
+              // Derived per-field validation state (not stored, computed inline)
+              const recipientError = touched.recipient
+                ? (!recipient.trim()
+                    ? 'Recipient is required.'
+                    : !isValidStellarAddress(recipient.trim())
+                    ? 'Please enter a valid Stellar address (starts with G, 56 characters).'
+                    : undefined)
+                : undefined;
+              const recipientSuccess = touched.recipient && !recipientError && recipient.trim().length > 0;
+
+              const depositAmountNum = parseFloat(depositAmount.replace(/,/g, ''));
+              const depositError = touched.depositAmount
+                ? (!depositAmount.trim() || isNaN(depositAmountNum) || depositAmountNum <= 0
+                    ? 'Deposit amount must be a positive number.'
+                    : undefined)
+                : undefined;
+              const depositSuccess = touched.depositAmount && !depositError && depositAmount.trim().length > 0;
+
+              return (
+                <>
+                  <InputField
                     id="create-stream-recipient"
-                    type="text"
-                    className="input-field"
-                    value={recipient}
-                    onChange={(e) => {
-                      setRecipient(e.target.value);
-                      if (error) setError(null);
-                    }}
-                    placeholder="Paste Stellar address (G...)"
-                    autoComplete="off"
-                    aria-required="true"
-                    aria-invalid={!!(error && error.includes("Recipient"))}
-                    aria-describedby="create-stream-recipient-helper"
-                  />
-                </div>
-                <span
-                  id="create-stream-recipient-helper"
-                  className="form-helper"
-                >
-                  Recipient will be able to withdraw accrued USDC over time.
-                </span>
-              </div>
-              <div className="form-group">
-                <label htmlFor="create-stream-deposit" className="form-label">
-                  Deposit amount{" "}
-                  <span className="required" aria-hidden="true">
-                    *
-                  </span>
-                </label>
-                <div className="input-container input-with-prefix-suffix">
-                  <span className="input-prefix" aria-hidden="true">
-                    $
-                  </span>
-                  <input
+                    label="Recipient"
+                    required
+                    error={recipientError}
+                    helperText="Enter a valid Stellar address (starts with G, 56 characters)"
+                    success={recipientSuccess}
+                  >
+                    <input
+                      type="text"
+                      className="input-field"
+                      value={recipient}
+                      onChange={(e) => {
+                        setRecipient(e.target.value);
+                        if (error) setError(null);
+                      }}
+                      onBlur={() => handleBlur('recipient')}
+                      placeholder="Paste Stellar address (G...)"
+                      autoComplete="off"
+                    />
+                  </InputField>
+
+                  <InputField
                     id="create-stream-deposit"
+                    label="Deposit amount"
+                    required
+                    error={depositError}
+                    helperText="Enter the total USDC amount to deposit into the stream"
+                    success={depositSuccess}
+                  >
+                    <input
+                      type="text"
+                      inputMode="decimal"
+                      className="input-field"
+                      value={depositAmount}
+                      onChange={(e) => {
+                        const v = e.target.value.replace(/[^0-9.]/g, '');
+                        setDepositAmount(v);
+                        if (error) setError(null);
+                      }}
+                      onBlur={() => handleBlur('depositAmount')}
+                      placeholder="$ 0.00 USDC"
+                    />
+                  </InputField>
+                </>
+              );
+            })()}
+            <div className="info-box" role="region" aria-labelledby="info-box-title">
+              <div id="info-box-title" className="info-box-title">Smart contract lock:</div>
+              <p className="info-box-text">
+                Your USDC will be locked in a Soroban smart contract. The recipient can withdraw their accrued portion at any time.
+              </p>
+            </div>
+          </>
+        )}
+        {currentStep === 2 && (() => {
+          // Derived per-field validation state for step 2
+          const accrualRateNum = parseFloat(accrualRate);
+          const accrualRateError = touched.accrualRate
+            ? (!accrualRate.trim() || isNaN(accrualRateNum) || accrualRateNum <= 0
+                ? 'Stream rate must be a positive number.'
+                : undefined)
+            : undefined;
+          const accrualRateSuccess = touched.accrualRate && !accrualRateError && accrualRate.trim().length > 0;
+
+          const durationNum = parseFloat(duration);
+          const durationError = touched.duration
+            ? (!duration.trim() || isNaN(durationNum) || durationNum <= 0
+                ? 'Duration must be a positive number.'
+                : undefined)
+            : undefined;
+          const durationSuccess = touched.duration && !durationError && duration.trim().length > 0;
+
+          const customStartDateError = (startTimeOption === 'custom' && touched.customStartDate)
+            ? (!customStartDate
+                ? 'Custom start date is required.'
+                : new Date(customStartDate) < new Date()
+                ? 'Start date must be in the future.'
+                : undefined)
+            : undefined;
+          const customStartDateSuccess = startTimeOption === 'custom' && touched.customStartDate && !customStartDateError && Boolean(customStartDate);
+
+          const cliffDateError = (cliffEnabled && touched.cliffDate)
+            ? (!cliffDate
+                ? 'Cliff date is required.'
+                : new Date(cliffDate) < new Date(new Date().setHours(0, 0, 0, 0))
+                ? 'Cliff date must not be in the past.'
+                : (startTimeOption === 'custom' && customStartDate && new Date(cliffDate) < new Date(customStartDate))
+                ? 'Cliff date must be on or after the start date.'
+                : undefined)
+            : undefined;
+          const cliffDateSuccess = cliffEnabled && touched.cliffDate && !cliffDateError && Boolean(cliffDate);
+
+          return (
+          <>
+            <hr className="divider" />
+
+            <div className="section-header">
+              <h3>Rate & schedule</h3>
+              <p>Configure how fast USDC streams and when it starts.</p>
+            </div>
+
+            {/* Stream Rate */}
+            <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
+              <div style={{ flex: 1 }}>
+                <InputField
+                  id="create-stream-accrual-rate"
+                  label="Stream rate"
+                  required
+                  error={accrualRateError}
+                  helperText="How much USDC accrues per time unit"
+                  success={accrualRateSuccess}
+                >
+                  <input
                     type="text"
-                    inputMode="decimal"
                     className="input-field"
-                    value={depositAmount}
-                    onChange={(e) => {
-                      const v = e.target.value.replace(/[^0-9.]/g, "");
-                      setDepositAmount(v);
-                      if (error) setError(null);
-                    }}
+                    value={accrualRate}
+                    onChange={(e) => setAccrualRate(e.target.value)}
+                    onBlur={() => handleBlur('accrualRate')}
                     placeholder="0.00"
-                    aria-required="true"
-                    aria-invalid={!!(error && error.includes("Deposit"))}
-                    aria-describedby="create-stream-deposit-helper"
                   />
-                  <span className="input-suffix-pill">USDC</span>
-                </div>
-                <span id="create-stream-deposit-helper" className="form-helper">
-                  Total USDC locked for this stream. Must cover full duration at
-                  chosen rate.
-                </span>
+                </InputField>
               </div>
-              <div
-                className="info-box"
-                role="region"
-                aria-labelledby="info-box-title"
-              >
-                <div id="info-box-title" className="info-box-title">
-                  Smart contract lock:
-                </div>
-                <p className="info-box-text">
-                  Your USDC will be locked in a Soroban smart contract. The
-                  recipient can withdraw their accrued portion at any time.
-                </p>
+              <div className="input-container narrow" style={{ marginTop: '1.625rem', flexShrink: 0 }}>
+                <span style={{ color: 'transparent' }}>_</span>
+                <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} style={{ color: 'var(--muted)' }}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
               </div>
-            </>
-          )}
-          {currentStep === 2 && (
-            <>
-              <hr className="divider" />
+            </div>
 
-              <div className="section-header">
-                <h3>Rate & schedule</h3>
-                <p>Configure how fast USDC streams and when it starts.</p>
+            {/* Stream Duration */}
+            <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
+              <div style={{ flex: 1 }}>
+                <InputField
+                  id="create-stream-duration"
+                  label="Stream duration"
+                  required
+                  error={durationError}
+                  helperText="How long the stream will run before ending"
+                  success={durationSuccess}
+                >
+                  <input
+                    type="text"
+                    className="input-field"
+                    value={duration}
+                    onChange={(e) => setDuration(e.target.value)}
+                    onBlur={() => handleBlur('duration')}
+                    placeholder="1"
+                  />
+                </InputField>
               </div>
+              <div className="input-container narrow" style={{ marginTop: '1.625rem', flexShrink: 0 }}>
+                <span style={{ color: 'transparent' }}>_</span>
+                <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} style={{ color: 'var(--muted)' }}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+            </div>
 
-              {error && (
-                <div className="form-error" role="alert">
-                  {error}
+            {/* Start Time */}
+            <div className="form-group">
+              <label className="form-label">Start time</label>
+              <div className="segmented-control">
+                <button
+                  className={`segment-btn ${startTimeOption === 'now' ? 'active' : ''}`}
+                  onClick={() => setStartTimeOption('now')}
+                >
+                  Start now
+                </button>
+                <button
+                  className={`segment-btn ${startTimeOption === 'custom' ? 'active' : ''}`}
+                  onClick={() => setStartTimeOption('custom')}
+                >
+                  Custom date
+                </button>
+              </div>
+              {startTimeOption === 'custom' && (
+                <div style={{ marginTop: '0.75rem' }}>
+                  <InputField
+                    id="create-stream-custom-start-date"
+                    label="Custom start date"
+                    required
+                    error={customStartDateError}
+                    helperText="When the stream begins accruing USDC"
+                    success={customStartDateSuccess}
+                  >
+                    <input
+                      type="datetime-local"
+                      className="input-field"
+                      value={customStartDate}
+                      onChange={(e) => setCustomStartDate(e.target.value)}
+                      onBlur={() => handleBlur('customStartDate')}
+                    />
+                  </InputField>
                 </div>
               )}
+            </div>
+
+            {/* Cliff Period */}
+            <div className="form-group">
+              <label className="form-label">Cliff period <span style={{ color: 'var(--muted)', fontWeight: 'normal' }}>(optional)</span></label>
+              <div className="toggle-container" onClick={() => setCliffEnabled(!cliffEnabled)}>
+                <div className={`toggle-switch ${cliffEnabled ? 'on' : ''}`}>
+                  <div className="toggle-knob" />
+                </div>
+                <span>Enable cliff (no withdrawals until specific date)</span>
+              </div>
+              {cliffEnabled && (
+                <div style={{ marginTop: '0.75rem' }}>
+                  <InputField
+                    id="create-stream-cliff-date"
+                    label="Cliff date"
+                    required
+                    error={cliffDateError}
+                    helperText="No accrual until cliff time. Useful for vesting schedules"
+                    success={cliffDateSuccess}
+                  >
+                    <input
+                      type="date"
+                      className="input-field"
+                      value={cliffDate}
+                      onChange={(e) => setCliffDate(e.target.value)}
+                      onBlur={() => handleBlur('cliffDate')}
+                    />
+                  </InputField>
+                </div>
+              )}
+            </div>
+
+            {/* Deposit Summary */}
+            <div className="deposit-summary">
+              <div className="deposit-box">
+                <div className="deposit-label">Required deposit</div>
+                <div className={`deposit-value ${parseFloat(requiredDeposit) > userDeposit ? 'required' : ''}`}>
+                  {requiredDeposit} USDC
+                </div>
+              </div>
+              <div className="deposit-box">
+                <div className="deposit-label">Your deposit</div>
+                <div className="deposit-value">{userDeposit.toFixed(2)} USDC</div>
+              </div>
+            </div>
+          </>
+          );
+        })()}
 
               {/* Stream Rate */}
               <div className="form-group">

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Menu, X, Moon, Sun } from "lucide-react";
 import { useWallet } from "../wallet-connect/Walletcontext";
 import NavLink from "./NavLink";
@@ -8,6 +8,8 @@ import WalletStatus from "./WalletStatus";
 interface AppNavbarProps {
   onThemeToggle?: () => void;
   theme?: "light" | "dark";
+  onSidebarToggle?: () => void;
+  isSidebarOpen?: boolean;
 }
 
 const ANON_LINKS = [
@@ -17,9 +19,9 @@ const ANON_LINKS = [
 ];
 
 const APP_LINKS = [
-  { to: "/app", label: "Treasuries" },
+  { to: "/app", label: "Dashboard" },
   { to: "/app/streams", label: "Streams" },
-  { to: "/app/recipient", label: "Audits" },
+  { to: "/app/recipient", label: "Recipient" },
 ];
 
 function FluxoraLogo({ connected }: { connected: boolean }) {
@@ -27,7 +29,7 @@ function FluxoraLogo({ connected }: { connected: boolean }) {
     <Link
       to={connected ? "/app" : "/"}
       aria-label="Fluxora home"
-      className="flex items-center gap-2 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-focus)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--navbar-bg)]"
+      className="flex items-center gap-2 outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-focus)] rounded-md"
     >
       <svg width="34" height="34" viewBox="0 0 46 46" fill="none" aria-hidden="true">
         <defs>
@@ -81,9 +83,14 @@ function ConnectingSkeleton() {
   );
 }
 
-export default function AppNavbar({ onThemeToggle, theme = "dark" }: AppNavbarProps) {
+export default function AppNavbar({
+  onThemeToggle,
+  theme = "dark",
+  onSidebarToggle,
+  isSidebarOpen = false,
+}: AppNavbarProps) {
   const { connected, address, network, disconnect } = useWallet();
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [connecting, setConnecting] = useState(false);
   const focusRingClassName =
     "outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-focus)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--navbar-bg)]";
@@ -95,9 +102,19 @@ export default function AppNavbar({ onThemeToggle, theme = "dark" }: AppNavbarPr
     return () => clearTimeout(t);
   }, []);
 
+  const location = useLocation();
   const links = connected ? APP_LINKS : ANON_LINKS;
+  const isAppView = connected && location.pathname.startsWith("/app");
 
-  const closeMobile = () => setMobileOpen(false);
+  const handleMobileToggle = () => {
+    if (isAppView && onSidebarToggle) {
+      onSidebarToggle();
+    } else {
+      setMobileMenuOpen((o) => !o);
+    }
+  };
+
+  const closeMobile = () => setMobileMenuOpen(false);
 
   return (
     <header
@@ -107,7 +124,21 @@ export default function AppNavbar({ onThemeToggle, theme = "dark" }: AppNavbarPr
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
         {/* Left: Logo */}
-        <FluxoraLogo connected={connected} />
+        <div className="flex items-center gap-4">
+          {/* Mobile Sidebar Toggle (only in App View) */}
+          {isAppView && (
+            <button
+              className="md:hidden flex items-center justify-center w-11 h-11 -ml-2 rounded-lg text-[var(--navbar-icon-color)] hover:text-[var(--text)] hover:bg-[var(--surface-elevated)] transition-all outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+              onClick={onSidebarToggle}
+              aria-label={isSidebarOpen ? "Close navigation sidebar" : "Open navigation sidebar"}
+              aria-expanded={isSidebarOpen}
+              aria-controls="app-sidebar"
+            >
+              {isSidebarOpen ? <X size={26} aria-hidden="true" /> : <Menu size={26} aria-hidden="true" />}
+            </button>
+          )}
+          <FluxoraLogo connected={connected} />
+        </div>
 
         {/* Center: Nav links (desktop) */}
         <nav
@@ -125,70 +156,102 @@ export default function AppNavbar({ onThemeToggle, theme = "dark" }: AppNavbarPr
           <button
             onClick={onThemeToggle}
             aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
-            className={`flex items-center justify-center w-9 h-9 rounded-full border border-[var(--navbar-icon-border)] text-[var(--navbar-icon-color)] hover:border-[var(--accent)]/50 hover:text-[var(--accent)] transition-colors ${focusRingClassName}`}
+            className="flex items-center justify-center min-h-[44px] min-w-[44px] rounded-full border border-[var(--navbar-icon-border)] text-[var(--navbar-icon-color)] hover:border-[var(--accent)]/50 hover:text-[var(--accent)] transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
           >
-            {theme === "light" ? <Moon size={16} aria-hidden="true" /> : <Sun size={16} aria-hidden="true" />}
+            {theme === "light" ? (
+              <Moon size={16} aria-hidden="true" />
+            ) : (
+              <Sun size={16} aria-hidden="true" />
+            )}
           </button>
 
           {/* Wallet area */}
           {connecting ? (
             <ConnectingSkeleton />
           ) : connected && address ? (
-            <WalletStatus address={address} network={network ?? "TESTNET"} onDisconnect={disconnect} />
+            <WalletStatus
+              address={address}
+              network={network ?? "TESTNET"}
+              onDisconnect={disconnect}
+            />
           ) : (
             <Link
               to="/connect-wallet"
               aria-label="Connect your Stellar wallet"
-              className={`px-5 h-9 rounded-full bg-[var(--cta-bg)] text-white text-sm font-semibold shadow-[var(--cta-shadow)] hover:opacity-90 transition-opacity flex items-center ${focusRingClassName}`}
+              className="px-5 h-[44px] rounded-full bg-[var(--cta-bg)] text-white text-sm font-semibold shadow-[var(--cta-shadow)] hover:opacity-90 transition-opacity outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] flex items-center"
             >
               Connect Wallet
             </Link>
           )}
         </div>
 
-        {/* Mobile: hamburger */}
-        <button
-          className={`md:hidden flex items-center justify-center w-10 h-10 rounded-md text-[var(--navbar-icon-color)] hover:text-[var(--text)] transition-colors ${focusRingClassName}`}
-          onClick={() => setMobileOpen((o) => !o)}
-          aria-label={mobileOpen ? "Close navigation menu" : "Open navigation menu"}
-          aria-expanded={mobileOpen}
-          aria-controls="mobile-nav"
-        >
-          {mobileOpen ? <X size={22} aria-hidden="true" /> : <Menu size={22} aria-hidden="true" />}
-        </button>
+        {/* Mobile: hamburger (only in Marketing View or if not using sidebar) */}
+        {!isAppView && (
+          <button
+            className="md:hidden flex items-center justify-center w-10 h-10 rounded-md text-[var(--navbar-icon-color)] hover:text-[var(--text)] transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+            onClick={handleMobileToggle}
+            aria-label={
+              mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"
+            }
+            aria-expanded={mobileMenuOpen}
+            aria-controls="mobile-nav"
+          >
+            {mobileMenuOpen ? (
+              <X size={22} aria-hidden="true" />
+            ) : (
+              <Menu size={22} aria-hidden="true" />
+            )}
+          </button>
+        )}
       </div>
 
-      {/* Mobile menu */}
-      {mobileOpen && (
+      {/* Mobile menu (Dropdown for marketing site) */}
+      {mobileMenuOpen && !isAppView && (
         <div
           id="mobile-nav"
           role="navigation"
-          aria-label={connected ? "App navigation" : "Marketing navigation"}
+          aria-label="Marketing navigation"
           className="md:hidden border-t border-[var(--navbar-border)] bg-[var(--navbar-bg)] px-4 pb-4 pt-2 flex flex-col gap-1"
         >
           {links.map((link) => (
-            <NavLink key={link.to} to={link.to} label={link.label} onClick={closeMobile} />
+            <NavLink
+              key={link.to}
+              to={link.to}
+              label={link.label}
+              onClick={closeMobile}
+            />
           ))}
 
           <div className="mt-3 pt-3 border-t border-[var(--navbar-border)] flex items-center gap-3 flex-wrap">
             <button
               onClick={onThemeToggle}
               aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
-              className={`flex items-center justify-center w-9 h-9 rounded-full border border-[var(--navbar-icon-border)] text-[var(--navbar-icon-color)] hover:border-[var(--accent)]/50 hover:text-[var(--accent)] transition-colors ${focusRingClassName}`}
+              className="flex items-center justify-center min-h-[44px] min-w-[44px] rounded-full border border-[var(--navbar-icon-border)] text-[var(--navbar-icon-color)] hover:border-[var(--accent)]/50 hover:text-[var(--accent)] transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
             >
-              {theme === "light" ? <Moon size={16} aria-hidden="true" /> : <Sun size={16} aria-hidden="true" />}
+              {theme === "light" ? (
+                <Moon size={16} aria-hidden="true" />
+              ) : (
+                <Sun size={16} aria-hidden="true" />
+              )}
             </button>
 
             {connecting ? (
               <ConnectingSkeleton />
             ) : connected && address ? (
-              <WalletStatus address={address} network={network ?? "TESTNET"} onDisconnect={() => { disconnect(); closeMobile(); }} />
+              <WalletStatus
+                address={address}
+                network={network ?? "TESTNET"}
+                onDisconnect={() => {
+                  disconnect();
+                  closeMobile();
+                }}
+              />
             ) : (
               <Link
                 to="/connect-wallet"
                 onClick={closeMobile}
                 aria-label="Connect your Stellar wallet"
-                className={`px-5 h-9 rounded-full bg-[var(--cta-bg)] text-white text-sm font-semibold shadow-[var(--cta-shadow)] hover:opacity-90 transition-opacity flex items-center ${focusRingClassName}`}
+                className="px-5 h-[44px] rounded-full bg-[var(--cta-bg)] text-white text-sm font-semibold shadow-[var(--cta-shadow)] hover:opacity-90 transition-opacity outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] flex items-center"
               >
                 Connect Wallet
               </Link>

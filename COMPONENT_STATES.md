@@ -58,7 +58,8 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 );
 
 Button.displayName = 'Button';
-```
+
+> Implementation note: the app uses shared `.button`, `.button--primary`, `.button--secondary`, and `.button--ghost` classes for consistent hover, focus, disabled, and loading states instead of inline styles.
 
 ### CSS Implementation
 
@@ -802,4 +803,261 @@ export const Skeleton: React.FC<SkeletonProps> = ({
 
 **Version**: 1.0  
 **Last Updated**: March 30, 2026  
+**Status**: ✅ Ready for implementation
+
+---
+
+## CreateStreamModal Validation States
+
+### Overview
+
+The `CreateStreamModal` uses two reusable components — `InputField` and `ValidationMessage` — to render validation feedback across Steps 1 and 2. Step 3 is read-only and has no validation states.
+
+### Validated Fields by Step
+
+**Step 1**
+- Recipient address
+- Deposit amount
+
+**Step 2**
+- Stream rate
+- Stream duration
+- Custom start date *(conditional — only shown when "Custom start" is selected)*
+- Cliff date *(conditional — only shown when cliff period is enabled)*
+
+Step 3 (Review & Create) renders plain `div` elements — no `InputField` wrappers, no validation states.
+
+---
+
+### State Table
+
+```
+┌──────────────┬──────────────────────────┬──────────────────────────┬──────────────────────────┬──────────────┐
+│ State        │ Border                   │ Background Tint          │ Message Color            │ Icon         │
+├──────────────┼──────────────────────────┼──────────────────────────┼──────────────────────────┼──────────────┤
+│ Default      │ var(--color-border-      │ var(--color-surface-     │ —                        │ —            │
+│              │ default) 1px             │ raised)                  │                          │              │
+│ Hint         │ var(--color-border-      │ var(--color-surface-     │ var(--color-text-muted)  │ —            │
+│              │ default) 1px             │ raised)                  │                          │              │
+│ Error        │ var(--color-danger) 2px  │ rgba(239, 68, 68, 0.05)  │ var(--color-danger)      │ error SVG    │
+│ Success      │ var(--color-success) 1px │ rgba(16, 185, 129, 0.05) │ var(--color-success)     │ checkmark SVG│
+└──────────────┴──────────────────────────┴──────────────────────────┴──────────────────────────┴──────────────┘
+```
+
+#### Default State
+
+- Border: `var(--color-border-default)` 1px solid
+- Background: `var(--color-surface-raised)`
+- No message rendered
+- Applied when a field has not been touched (no blur, no submit attempt)
+
+#### Hint State
+
+- Border: `var(--color-border-default)` 1px solid (unchanged from default)
+- Background: `var(--color-surface-raised)` (unchanged from default)
+- Message color: `var(--color-text-muted)`
+- No icon
+- Rendered when `helperText` prop is provided and no `error` is active
+- `ValidationMessage` uses `role="status"` (not `role="alert"`)
+
+#### Error State
+
+- Border: `var(--color-danger)` 2px solid
+- Background tint: `rgba(239, 68, 68, 0.05)`
+- Message color: `var(--color-danger)`
+- Error SVG icon rendered with `aria-hidden="true"`
+- `ValidationMessage` uses `role="alert"` — screen readers announce immediately
+- Replaces hint text when both `error` and `helperText` are provided
+- Applied when a touched field fails validation, or when the user attempts to advance a step with invalid fields
+
+#### Success State
+
+- Border: `var(--color-success)` 1px solid
+- Background tint: `rgba(16, 185, 129, 0.05)`
+- Message color: `var(--color-success)`
+- Checkmark SVG icon rendered with `aria-hidden="true"`
+- No `role` attribute on `ValidationMessage`
+- Applied when a touched field passes validation
+
+---
+
+### Design Tokens Used
+
+| Token | Usage |
+|---|---|
+| `var(--color-danger)` | Error border color, error message text color |
+| `var(--color-success)` | Success border color, success message text color |
+| `var(--color-border-default)` | Default and hint state border color |
+| `var(--color-surface-raised)` | Default and hint state background |
+| `var(--color-text-muted)` | Hint message text color |
+| `var(--font-body-sm)` | ValidationMessage typography |
+| `var(--radius-md)` | Input container border-radius |
+| `var(--transition-base)` | Border-color and background-color transitions |
+
+No hardcoded hex values or pixel sizes — all visual properties reference design tokens.
+
+---
+
+### Accessibility Notes
+
+#### ARIA Attributes
+
+| Attribute | Element | When applied |
+|---|---|---|
+| `aria-invalid="true"` | `<input>` | Field has an active error |
+| `aria-invalid="false"` | `<input>` | Field passes validation (success state) |
+| `aria-required="true"` | `<input>` | Field is marked `required` |
+| `aria-describedby` | `<input>` | Points to the `id` of the active `ValidationMessage` or hint element |
+| `role="alert"` | `ValidationMessage` | Error type — triggers immediate screen reader announcement |
+| `role="status"` | `ValidationMessage` | Hint type — polite announcement, does not interrupt |
+| `aria-hidden="true"` | SVG icons | Decorative icons inside `ValidationMessage` — not read aloud |
+| `htmlFor` / `id` | `<label>` / `<input>` | Always paired — every input has an associated label |
+
+#### Screen Reader Behavior
+
+- When an error appears (e.g. after blur or submit attempt), `role="alert"` causes the error message to be announced immediately without requiring the user to move focus.
+- Hint messages use `role="status"` — they are announced politely and do not interrupt ongoing speech.
+- Success messages have no role — they are available to screen readers when focus moves to the field but are not announced automatically.
+- Decorative SVG icons carry `aria-hidden="true"` so screen readers skip them and only read the text message.
+
+#### Color Contrast Requirements
+
+- Error border (`var(--color-danger)`, #ef4444): minimum 3:1 contrast ratio against the input background in both light and dark themes.
+- Success border (`var(--color-success)`, #10b981): minimum 3:1 contrast ratio against the input background in both light and dark themes.
+- Error message text (`var(--color-danger)`): minimum 4.5:1 contrast ratio against the modal background in both light and dark themes.
+- Error state does not rely on color alone — an error icon and error text are always shown alongside the red border (WCAG 1.4.1 Use of Color).
+
+---
+
+### Code Example
+
+```tsx
+import { InputField } from './InputField';
+import { ValidationMessage } from './ValidationMessage';
+
+// --- Standalone ValidationMessage usage ---
+
+// Error message (role="alert", error icon, danger color)
+<ValidationMessage
+  id="recipient-error"
+  message="Please enter a valid Stellar address (starts with G, 56 characters)."
+  type="error"
+/>
+
+// Hint message (role="status", no icon, muted color)
+<ValidationMessage
+  id="recipient-hint"
+  message="Enter the recipient's Stellar wallet address."
+  type="hint"
+/>
+
+// Success message (no role, checkmark icon, success color)
+<ValidationMessage
+  id="recipient-success"
+  message="Valid Stellar address."
+  type="success"
+/>
+
+// --- InputField wrapping a native <input> ---
+// InputField automatically wires aria-invalid, aria-required, and aria-describedby
+// onto the child <input> via React.cloneElement.
+
+// Default state (no error, no helperText, no success)
+<InputField id="recipient" label="Recipient Address" required>
+  <input
+    type="text"
+    value={recipient}
+    onChange={e => setRecipient(e.target.value)}
+    onBlur={() => handleBlur('recipient')}
+    placeholder="G..."
+  />
+</InputField>
+
+// Hint state (helperText provided, no error)
+<InputField
+  id="deposit"
+  label="Deposit Amount"
+  required
+  helperText="Amount in USDC to deposit into the stream."
+>
+  <input
+    type="number"
+    value={deposit}
+    onChange={e => setDeposit(e.target.value)}
+    onBlur={() => handleBlur('deposit')}
+    placeholder="0.00"
+  />
+</InputField>
+
+// Error state (error string provided — overrides helperText)
+<InputField
+  id="recipient"
+  label="Recipient Address"
+  required
+  error={recipientError}
+  helperText="Enter the recipient's Stellar wallet address."
+>
+  <input
+    type="text"
+    value={recipient}
+    onChange={e => setRecipient(e.target.value)}
+    onBlur={() => handleBlur('recipient')}
+    placeholder="G..."
+  />
+</InputField>
+
+// Success state (success=true, no error)
+<InputField
+  id="recipient"
+  label="Recipient Address"
+  required
+  success={recipientSuccess}
+>
+  <input
+    type="text"
+    value={recipient}
+    onChange={e => setRecipient(e.target.value)}
+    onBlur={() => handleBlur('recipient')}
+    placeholder="G..."
+  />
+</InputField>
+```
+
+#### CSS Modifier Classes
+
+```css
+/* Applied by InputField to the .input-container wrapper */
+
+.input-container--error {
+  border: 2px solid var(--color-danger);
+  background-color: rgba(239, 68, 68, 0.05);
+  border-radius: var(--radius-md);
+  transition: border-color var(--transition-base), background-color var(--transition-base);
+}
+
+.input-container--success {
+  border: 1px solid var(--color-success);
+  background-color: rgba(16, 185, 129, 0.05);
+  border-radius: var(--radius-md);
+  transition: border-color var(--transition-base), background-color var(--transition-base);
+}
+
+/* Applied by ValidationMessage */
+
+.validation-message {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font: var(--font-body-sm);
+}
+
+.validation-message--error  { color: var(--color-danger); }
+.validation-message--hint   { color: var(--color-text-muted); }
+.validation-message--success { color: var(--color-success); }
+```
+
+---
+
+**Version**: 1.1
+**Last Updated**: March 30, 2026
 **Status**: ✅ Ready for implementation
