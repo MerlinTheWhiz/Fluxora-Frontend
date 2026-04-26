@@ -1,0 +1,167 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: var(--space-lg);
+}
+
+.modal {
+  position: relative;
+  background: var(--color-bg-primary);
+  border-radius: var(--radius-xl);
+  padding: clamp(1.25rem, 5vw, 2rem);
+  max-width: 480px;
+  width: 100%;
+  box-shadow: var(--shadow-xl);
+  border: 1px solid var(--color-border-default);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.focusable {
+  outline: none;
+}
+
+.focusable:focus-visible {
+  box-shadow: var(--focus-ring);
+}
+
+.closeButton {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: transparent;
+  border: none;
+  color: var(--color-text-tertiary);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.25rem;
+  line-height: 1;
+  transition:
+    color var(--transition-base),
+    background-color var(--transition-base),
+    box-shadow var(--transition-base);
+  border-radius: var(--radius-full);
+}
+
+.closeButton:hover {
+  color: var(--color-text-primary);
+  background: color-mix(in srgb, var(--color-text-primary) 8%, transparent);
+}
+
+.header {
+  margin-bottom: 1.5rem;
+  padding-right: 2.75rem;
+}
+
+.title {
+  margin: 0 0 0.5rem;
+  font: var(--font-heading-3);
+  color: var(--color-text-primary);
+}
+
+.subtitle {
+  margin: 0;
+  font: var(--font-body-md);
+  color: var(--color-text-tertiary);
+  line-height: 1.5;
+}
+
+.walletList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.walletOption {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.75rem, 3vw, 1rem);
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-lg);
+  padding: clamp(0.75rem, 3vw, 1rem);
+  cursor: pointer;
+  transition:
+    background-color var(--transition-base),
+    border-color var(--transition-base),
+    box-shadow var(--transition-base),
+    transform var(--transition-fast);
+  text-align: left;
+  width: 100%;
+  color: inherit;
+}
+
+.walletOption:hover {
+  background: var(--color-surface-elevated);
+  border-color: color-mix(in srgb, var(--color-focus) 40%, var(--color-border-default));
+}
+
+.walletOption:focus-visible {
+  transform: translateY(-1px);
+}
+
+.walletIcon {
+  font-size: clamp(1.5rem, 5vw, 2rem);
+  flex-shrink: 0;
+  width: clamp(40px, 12vw, 48px);
+  height: clamp(40px, 12vw, 48px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.walletInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.walletName {
+  font: var(--font-label-lg);
+  color: var(--color-text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.walletDescription {
+  font: var(--font-body-sm);
+  color: var(--color-text-tertiary);
+  line-height: 1.4;
+}
+
+.chevron {
+  font-size: 1.25rem;
+  color: var(--color-text-tertiary);
+  flex-shrink: 0;
+}
+
+.footer {
+  font: var(--font-body-sm);
+  color: var(--color-text-tertiary);
+  text-align: center;
+  line-height: 1.5;
+}
+
+.termsLink {
+  color: var(--color-accent-secondary);
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  transition:
+    color var(--transition-base),
+    box-shadow var(--transition-base);
+}
+
+.termsLink:hover {
+  color: var(--color-accent-secondary-dark);
+}
+
+@media (max-width: 480px) {
+  .modal {
+    padding: 1.5rem;
+  }
+}

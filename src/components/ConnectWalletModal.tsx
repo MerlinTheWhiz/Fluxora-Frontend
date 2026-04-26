@@ -111,7 +111,7 @@ export default function ConnectWalletModal({
   ];
 
   return (
-    <div style={styles.backdrop} onClick={handleBackdropClick}>
+    <div className={styles.backdrop} onClick={handleBackdropClick}>
       <div
         id="connect-wallet-modal"
         style={styles.modal}
