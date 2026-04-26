@@ -154,7 +154,7 @@ export default function AppNavbar({
           <button
             onClick={onThemeToggle}
             aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
-            className="flex items-center justify-center w-9 h-9 rounded-full border border-[var(--navbar-icon-border)] text-[var(--navbar-icon-color)] hover:border-[var(--accent)]/50 hover:text-[var(--accent)] transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+            className="flex items-center justify-center min-h-[44px] min-w-[44px] rounded-full border border-[var(--navbar-icon-border)] text-[var(--navbar-icon-color)] hover:border-[var(--accent)]/50 hover:text-[var(--accent)] transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
           >
             {theme === "light" ? (
               <Moon size={16} aria-hidden="true" />
@@ -176,7 +176,7 @@ export default function AppNavbar({
             <Link
               to="/connect-wallet"
               aria-label="Connect your Stellar wallet"
-              className="px-5 h-9 rounded-full bg-[var(--cta-bg)] text-white text-sm font-semibold shadow-[var(--cta-shadow)] hover:opacity-90 transition-opacity outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] flex items-center"
+              className="px-5 h-[44px] rounded-full bg-[var(--cta-bg)] text-white text-sm font-semibold shadow-[var(--cta-shadow)] hover:opacity-90 transition-opacity outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] flex items-center"
             >
               Connect Wallet
             </Link>
@@ -224,7 +224,7 @@ export default function AppNavbar({
             <button
               onClick={onThemeToggle}
               aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
-              className="flex items-center justify-center w-9 h-9 rounded-full border border-[var(--navbar-icon-border)] text-[var(--navbar-icon-color)] hover:border-[var(--accent)]/50 hover:text-[var(--accent)] transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+              className="flex items-center justify-center min-h-[44px] min-w-[44px] rounded-full border border-[var(--navbar-icon-border)] text-[var(--navbar-icon-color)] hover:border-[var(--accent)]/50 hover:text-[var(--accent)] transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
             >
               {theme === "light" ? (
                 <Moon size={16} aria-hidden="true" />
@@ -249,7 +249,7 @@ export default function AppNavbar({
                 to="/connect-wallet"
                 onClick={closeMobile}
                 aria-label="Connect your Stellar wallet"
-                className="px-5 h-9 rounded-full bg-[var(--cta-bg)] text-white text-sm font-semibold shadow-[var(--cta-shadow)] hover:opacity-90 transition-opacity outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] flex items-center"
+                className="px-5 h-[44px] rounded-full bg-[var(--cta-bg)] text-white text-sm font-semibold shadow-[var(--cta-shadow)] hover:opacity-90 transition-opacity outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] flex items-center"
               >
                 Connect Wallet
               </Link>

@@ -1200,3 +1200,205 @@ After all tests pass, complete this checklist:
 **Document Version**: 1.0  
 **Last Updated**: March 30, 2026  
 **Status**: ✅ Ready for QA
+
+---
+
+## Section 7: Touch Target Validation
+
+> **Scope**: AppNavbar (`src/components/navigation/AppNavbar.tsx`) and ConnectButton (`src/components/ConnectButton.tsx`)  
+> **Standard**: WCAG 2.1 Success Criterion 2.5.5 (AAA) — minimum 44×44px touch target for all interactive elements
+
+---
+
+### 7.1 Manual DevTools Box-Model Inspection
+
+#### Test: AppNavbar Interactive Elements
+
+**Steps**:
+1. Open the app at http://localhost:5173 in Chrome
+2. Open DevTools (F12) → Elements panel
+3. For each interactive element listed below, right-click → "Inspect" to select it
+4. In the DevTools sidebar, open the **Computed** tab and scroll to the **Box Model** diagram
+5. Read the computed `width` and `height` values (including padding)
+
+| Element | How to Select | Min Width | Min Height |
+|---------|--------------|-----------|------------|
+| Hamburger menu button | `<button aria-label="Open navigation menu">` | ≥ 44px | ≥ 44px |
+| Theme toggle button | `<button aria-label="Switch to dark mode">` | ≥ 44px | ≥ 44px |
+| "Connect Wallet" link | `<a>` in navbar action area | ≥ 44px | ≥ 44px |
+| Logo link | `<a>` wrapping the logo | ≥ 44px | ≥ 44px |
+| Mobile drawer NavLinks | Each `<a>` inside the mobile menu drawer | ≥ 44px | ≥ 44px |
+
+**Pass Criteria**: Computed `width ≥ 44px` AND `height ≥ 44px` for every element in the table above.
+
+---
+
+#### Test: ConnectButton Interactive Element
+
+**Steps**:
+1. Navigate to a page where `ConnectButton` is rendered (e.g., `/app/connect` or the landing page)
+2. Open DevTools → Elements panel, inspect the `<button>` or `<a>` rendered by `ConnectButton`
+3. In the **Computed** tab, read the Box Model `width` and `height`
+
+| Element | Min Width | Min Height |
+|---------|-----------|------------|
+| ConnectButton root element | ≥ 44px | ≥ 44px |
+
+**Pass Criteria**: Computed `width ≥ 44px` AND `height ≥ 44px`.
+
+---
+
+### 7.2 Automated Accessibility Audit
+
+#### Test: Axe DevTools Audit
+
+**Steps**:
+1. Install the [Axe DevTools](https://www.deque.com/axe/devtools/) browser extension
+2. Navigate to the page containing AppNavbar and ConnectButton
+3. Open DevTools → **Axe DevTools** tab
+4. Click **Scan ALL of my page**
+5. In the results, filter by or search for "touch target" violations
+6. Verify:
+   - [ ] Zero "target size" or "touch target" violations reported for AppNavbar elements
+   - [ ] Zero "target size" or "touch target" violations reported for ConnectButton
+
+**Pass Criteria**: Axe DevTools reports zero touch target size violations for AppNavbar and ConnectButton.
+
+---
+
+#### Test: WAVE Audit
+
+**Steps**:
+1. Install the [WAVE](https://wave.webaim.org/) browser extension
+2. Navigate to the page containing AppNavbar and ConnectButton
+3. Click the WAVE extension icon to run the audit
+4. In the WAVE panel, check the **Errors** and **Alerts** tabs
+5. Verify:
+   - [ ] No touch target errors flagged for AppNavbar interactive elements
+   - [ ] No touch target errors flagged for ConnectButton
+
+> **Note**: If an automated tool cannot detect a touch target violation that is present in the rendered DOM, the manual DevTools box-model inspection in §7.1 is the authoritative verification method.
+
+**Pass Criteria**: WAVE reports zero touch target errors for AppNavbar and ConnectButton.
+
+---
+
+### 7.3 Mobile Emulation Testing
+
+#### Test: 375px Viewport (iPhone SE / iPhone 14)
+
+**Steps**:
+1. Open DevTools → **Toggle Device Toolbar** (Ctrl+Shift+M / Cmd+Shift+M)
+2. Set viewport width to **375px** (height: 812px or auto)
+3. Reload the page
+4. Inspect each AppNavbar interactive element using the Box Model (see §7.1):
+   - [ ] Hamburger button: ≥ 44×44px
+   - [ ] Theme toggle: ≥ 44×44px
+   - [ ] Logo link: height ≥ 44px
+5. Open the mobile menu drawer and inspect each NavLink:
+   - [ ] Each NavLink: height ≥ 44px
+   - [ ] Spacing between adjacent NavLinks: ≥ 8px
+6. Inspect ConnectButton:
+   - [ ] ConnectButton: ≥ 44×44px
+
+**Pass Criteria**: All interactive elements meet 44×44px minimum at 375px viewport.
+
+---
+
+#### Test: 390px Viewport (iPhone 14 Pro / iPhone 15)
+
+**Steps**:
+1. In DevTools Device Toolbar, set viewport width to **390px** (height: 844px or auto)
+2. Reload the page
+3. Repeat all inspection steps from the 375px test above:
+   - [ ] Hamburger button: ≥ 44×44px
+   - [ ] Theme toggle: ≥ 44×44px
+   - [ ] Logo link: height ≥ 44px
+   - [ ] Each mobile drawer NavLink: height ≥ 44px, spacing ≥ 8px
+   - [ ] ConnectButton: ≥ 44×44px
+
+**Pass Criteria**: All interactive elements meet 44×44px minimum at 390px viewport.
+
+---
+
+### 7.4 Keyboard Navigation and Focus State Checks
+
+#### Test: Keyboard Navigation Through AppNavbar
+
+**Steps**:
+1. Reload the page and place focus at the top of the document (click the address bar, then Tab once)
+2. Tab through the AppNavbar elements in order:
+   - [ ] Logo link receives focus — focus ring visible (2px cyan, 2px offset)
+   - [ ] Nav links (desktop) receive focus in left-to-right order — focus ring visible
+   - [ ] Theme toggle button receives focus — focus ring visible
+   - [ ] "Connect Wallet" link / ConnectButton receives focus — focus ring visible
+3. On mobile viewport (≤768px), Tab to the hamburger button:
+   - [ ] Hamburger button receives focus — focus ring visible
+   - [ ] Press Enter/Space to open the mobile menu
+   - [ ] Focus moves into the mobile drawer
+   - [ ] Tab through each NavLink — focus ring visible on each
+   - [ ] Press Escape or Tab past the last item to close/exit the drawer
+
+**Pass Criteria**: Every interactive element in AppNavbar and ConnectButton shows a visible focus ring (≥2px, cyan, 2px offset) when focused via keyboard. Tab order is logical (left-to-right, top-to-bottom).
+
+---
+
+#### Test: Focus Ring Contrast
+
+**Steps**:
+1. Tab to each interactive element in AppNavbar and ConnectButton
+2. Use the [Colour Contrast Analyser](https://www.taptap.com/contrast) or DevTools to measure the focus ring color against the adjacent background
+3. Verify:
+   - [ ] Focus ring contrast ratio ≥ 3:1 against adjacent background (WCAG 2.1 SC 1.4.11)
+
+**Pass Criteria**: Focus ring contrast ≥ 3:1 for all AppNavbar and ConnectButton elements.
+
+---
+
+### 7.5 Screen Reader Label Checks
+
+#### Test: aria-label on Icon-Only Buttons
+
+**Steps**:
+1. Open DevTools → Elements panel
+2. Inspect the hamburger menu button:
+   - [ ] `aria-label` present — value is `"Open navigation menu"` (when closed) or `"Close navigation menu"` (when open)
+   - [ ] `aria-expanded` present — value is `"false"` (when closed) or `"true"` (when open)
+3. Inspect the theme toggle button:
+   - [ ] `aria-label` present — value is `"Switch to dark mode"` or `"Switch to light mode"` (reflects the action it will perform)
+4. Inspect ConnectButton:
+   - [ ] `aria-label` or visible text label present that describes its purpose (e.g., "Connect Wallet")
+
+**Pass Criteria**: All icon-only buttons have a descriptive `aria-label`. The hamburger button has `aria-expanded` reflecting the current open/closed state.
+
+---
+
+#### Test: Screen Reader Announcement (VoiceOver / NVDA)
+
+**Steps**:
+1. Enable screen reader (macOS: Cmd+F5 for VoiceOver; Windows: NVDA)
+2. Tab to the hamburger menu button:
+   - [ ] Announced as: "Open navigation menu, button, collapsed" (or equivalent)
+3. Activate the button (Enter/Space):
+   - [ ] Announced as: "Close navigation menu, button, expanded" (or equivalent)
+4. Tab to the theme toggle:
+   - [ ] Announced as: "Switch to dark mode, button" (or equivalent)
+5. Tab to ConnectButton:
+   - [ ] Announced as: "Connect Wallet, button" (or equivalent)
+
+**Pass Criteria**: Screen reader announces the correct label and state (`aria-label`, `aria-expanded`) for all AppNavbar and ConnectButton interactive elements.
+
+---
+
+### Section 7 Sign-Off
+
+- [ ] §7.1 Manual box-model inspection passed for AppNavbar and ConnectButton
+- [ ] §7.2 Axe DevTools audit — zero touch target violations
+- [ ] §7.2 WAVE audit — zero touch target errors
+- [ ] §7.3 Mobile emulation at 375px — all targets ≥ 44×44px
+- [ ] §7.3 Mobile emulation at 390px — all targets ≥ 44×44px
+- [ ] §7.4 Keyboard navigation and focus rings verified
+- [ ] §7.5 `aria-label` and `aria-expanded` attributes verified
+- [ ] §7.5 Screen reader announcements correct
+
+**Signed by**: _________________________ Date: _____________
