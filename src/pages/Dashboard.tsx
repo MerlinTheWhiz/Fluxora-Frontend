@@ -131,7 +131,7 @@ export default function Dashboard() {
           </div>
           <button
             type="button"
-            style={connectBannerBtnStyle}
+            className="button button--secondary"
             onClick={() => setIsWalletModalOpen(true)}
             aria-label="Connect Stellar wallet"
           >
@@ -160,7 +160,7 @@ export default function Dashboard() {
           <RecentStreams streams={streams} />
           <button
             type="button"
-            style={createBtnStyle}
+            className="button button--primary"
             onClick={() => setIsModalOpen(true)}
             aria-label="Create stream"
           >
@@ -220,32 +220,6 @@ const walletBannerStyle: React.CSSProperties = {
   marginBottom: '0.25rem',
 };
 
-const connectBannerBtnStyle: React.CSSProperties = {
-  background: 'var(--accent)',
-  color: '#000',
-  border: 'none',
-  borderRadius: '6px',
-  padding: '0.375rem 0.875rem',
-  fontSize: '0.8125rem',
-  fontWeight: 600,
-  cursor: 'pointer',
-  whiteSpace: 'nowrap',
-};
-
-const createBtnStyle: React.CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-  gap: "0.5rem",
-  background: "var(--accent)",
-  color: "#ffffff",
-  border: "none",
-  padding: "0.625rem 1.25rem",
-  borderRadius: "8px",
-  fontWeight: 600,
-  fontSize: "1rem",
-  cursor: "pointer",
-  boxShadow: "0 4px 24px rgba(0, 212, 170, 0.4)",
-};
 
 const cardGrid: React.CSSProperties = {
   display: "grid",
