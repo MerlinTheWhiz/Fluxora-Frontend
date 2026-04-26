@@ -12,7 +12,6 @@ import Landing from "./pages/Landing";
 import TreasuryPage from "./pages/TreasuryPage";
 import ErrorPage from "./pages/ErrorPage";
 import NotFound from "./pages/NotFound";
-import TreasuryPage from "./pages/TreasuryPage";
 
 function LegacyStreamRedirect() {
   const { streamId } = useParams();
@@ -32,6 +31,8 @@ export default function App() {
       ? "dark"
       : "light";
   });
+
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -95,10 +96,19 @@ export default function App() {
     setTheme((prev) => (prev === "light" ? "dark" : "light"));
   };
 
+  const handleSidebarToggle = () => {
+    setIsSidebarOpen((prev) => !prev);
+  };
+
   return (
     <BrowserRouter>
       <WalletProvider>
-        <AppNavbar onThemeToggle={handleThemeToggle} theme={theme} />
+        <AppNavbar 
+          onThemeToggle={handleThemeToggle} 
+          theme={theme} 
+          onSidebarToggle={handleSidebarToggle}
+          isSidebarOpen={isSidebarOpen}
+        />
 
         <Routes>
           <Route path="/" element={<Home />} />
@@ -108,7 +118,12 @@ export default function App() {
           <Route path="/landing" element={<Landing theme={theme} />} />
           <Route
             path="/app"
-            element={<Layout onThemeToggle={handleThemeToggle} theme={theme} />}
+            element={
+              <Layout 
+                isSidebarOpen={isSidebarOpen}
+                onSidebarClose={() => setIsSidebarOpen(false)}
+              />
+            }
           >
             <Route index element={<Dashboard />} />
             <Route path="streams" element={<Streams />} />

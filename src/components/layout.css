@@ -207,36 +207,6 @@
   overflow: auto;
 }
 
-.app-sidebar-backdrop {
-  display: none;
-}
-
-.app-layout.is-collapsed .app-sidebar {
-  width: 84px;
-  padding-left: 0.65rem;
-  padding-right: 0.65rem;
-}
-
-.app-layout.is-collapsed .app-logo {
-  font-size: 1.04rem;
-}
-
-.app-layout.is-collapsed .app-nav-link {
-  justify-content: center;
-  padding-left: 0.35rem;
-  padding-right: 0.35rem;
-}
-
-.app-layout.is-collapsed .app-nav-label,
-.app-layout.is-collapsed .app-connect-label {
-  display: none;
-}
-
-.app-layout.is-collapsed .app-connect-button {
-  padding-left: 0;
-  padding-right: 0;
-}
-
 @media (max-width: 1024px) {
   .app-main {
     padding: 1.5rem;
@@ -305,46 +275,6 @@
 
   .app-main {
     padding: 1rem;
-  }
-
-  .app-layout.is-mobile-open .app-sidebar {
-    transform: translateX(0);
-  }
-
-  .app-sidebar-backdrop {
-    display: block;
-    position: fixed;
-    inset: 0;
-    border: none;
-    padding: 0;
-    margin: 0;
-    background: rgba(0, 0, 0, 0.46);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s ease;
-    z-index: 30;
-  }
-
-  .app-layout.is-mobile-open .app-sidebar-backdrop {
-    opacity: 1;
-    pointer-events: auto;
-  }
-
-  .app-layout.is-collapsed .app-sidebar {
-    width: 244px;
-    padding-left: 0.9rem;
-    padding-right: 0.9rem;
-  }
-
-  .app-layout.is-collapsed .app-nav-link {
-    justify-content: flex-start;
-    padding-left: 0.6rem;
-    padding-right: 0.6rem;
-  }
-
-  .app-layout.is-collapsed .app-nav-label,
-  .app-layout.is-collapsed .app-connect-label {
-    display: inline;
   }
 }
 
