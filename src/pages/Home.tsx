@@ -1,20 +1,30 @@
 import GetStartedCTA from "../components/GetStartedCTA";
+import Footer from "../components/Footer";
 
 export default function Home() {
   return (
     <div
       style={{
-        backgroundColor: "#F8FAFC",
+        backgroundColor: "var(--bg)",
         minHeight: "100vh",
         display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "2rem",
+        flexDirection: "column",
       }}
     >
-      <div style={{ width: "100%", maxWidth: "800px" }}>
-        <GetStartedCTA />
+      <div 
+        style={{ 
+          flex: 1,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "2rem",
+        }}
+      >
+        <div style={{ width: "100%", maxWidth: "800px" }}>
+          <GetStartedCTA />
+        </div>
       </div>
+      <Footer />
     </div>
   );
 }

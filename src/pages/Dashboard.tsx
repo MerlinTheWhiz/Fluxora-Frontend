@@ -134,7 +134,7 @@ export default function Dashboard() {
           </div>
           <button
             type="button"
-            className={compactPrimaryCtaClassName}
+            className="button button--secondary"
             onClick={() => setIsWalletModalOpen(true)}
             aria-label="Connect Stellar wallet"
           >
@@ -163,7 +163,7 @@ export default function Dashboard() {
           <RecentStreams streams={streams} />
           <button
             type="button"
-            className={primaryCtaClassName}
+            className="button button--primary"
             onClick={() => setIsModalOpen(true)}
             aria-label="Create stream"
           >
@@ -222,6 +222,7 @@ const walletBannerStyle: React.CSSProperties = {
   marginTop: '0.75rem',
   marginBottom: '0.25rem',
 };
+
 
 const cardGrid: React.CSSProperties = {
   display: "grid",
