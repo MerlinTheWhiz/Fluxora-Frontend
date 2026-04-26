@@ -1,32 +1,27 @@
 import React from "react";
 import "./skeleton.css";
 
-interface SkeletonProps {
+interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {
   width?: string | number;
   height?: string | number;
   borderRadius?: string | number;
   style?: React.CSSProperties;
 }
 
-/**
- * Single skeleton placeholder block
- * ──────────────────────────────────────
- * Implements DESIGN_SPEC.md skeleton loading specifications
- * 
- * Accessibility:
- * - aria-hidden="true" - not announced by screen readers
- * - Pulse animation respects prefers-reduced-motion
- * 
- * @param width - Block width (default: 100%)
- * @param height - Block height (default: 14px for text)
- * @param borderRadius - Corner radius (default: 6px)
- */
-export function Skeleton({ width = "100%", height = 14, borderRadius = 6, style }: SkeletonProps) {
+/** Single shimmer block. Width/height default to 100% so it fills its container. */
+export function Skeleton({
+  width = "100%",
+  height = 14,
+  borderRadius = 6,
+  style,
+  className = "",
+  ...rest
+}: SkeletonProps) {
   return (
     <div
-      className="skeleton"
+      className={`skeleton ${className}`.trim()}
       style={{ width, height, borderRadius, flexShrink: 0, ...style }}
-      aria-hidden="true"
+      {...rest}
     />
   );
 }
@@ -54,20 +49,19 @@ export function SkeletonText({ lines = 2, lastLineWidth = "60%" }: SkeletonTextP
   );
 }
 
-interface SkeletonCardProps {
+/** Surface card wrapper matching var(--surface) + var(--border). */
+export function SkeletonCard({
+  children,
+  style,
+  className = "",
+  ...rest
+}: {
   children: React.ReactNode;
   style?: React.CSSProperties;
-}
-
-/**
- * Skeleton card wrapper
- * ──────────────────────────────────────
- * Provides frame for skeleton content with surface styling
- * Matches actual card dimensions to prevent layout shift
- */
-export function SkeletonCard({ children, style }: SkeletonCardProps) {
+} & React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
+      className={className}
       style={{
         background: "var(--color-surface-default)",
         border: "1px solid var(--color-border-default)",
@@ -75,6 +69,7 @@ export function SkeletonCard({ children, style }: SkeletonCardProps) {
         padding: "var(--space-xl)",
         ...style,
       }}
+      {...rest}
     >
       {children}
     </div>

@@ -1,43 +1,25 @@
-import { Metric } from "./Metric"; 
+import { Metric } from "./Metric";
 
 export default function MetricCard({ icon, label, value, desc }: Metric) {
   return (
-    <div 
-      className="rounded-xl p-5 transition-all duration-200"
-      style={{
-        backgroundColor: "var(--color-surface-default)",
-        border: "1px solid var(--color-border-default)",
-        boxShadow: "var(--shadow-sm)",
-      }}
+    <div
+      className="flex flex-col bg-gray-100 rounded-xl p-6 h-full"
+      role="group"
+      aria-label={label}
     >
-      <div className="text-3xl mb-3">{icon}</div>
+      <div className="flex items-center justify-center w-10 h-10 text-3xl leading-none mb-4 shrink-0">
+        {icon}
+      </div>
 
-      <div 
-        className="font-medium uppercase tracking-wider mb-1"
-        style={{
-          color: "var(--color-text-muted)",
-          fontSize: "12px",
-        }}
-      >
+      <div className="text-gray-800 font-medium text-sm leading-5 mb-2">
         {label}
       </div>
 
-      <div 
-        className="font-semibold mb-2"
-        style={{
-          color: "var(--color-text-primary)",
-          fontSize: "24px",
-        }}
-      >
+      <div className="text-2xl font-semibold leading-8 text-black mb-2">
         {value}
       </div>
 
-      <p 
-        className="text-sm"
-        style={{
-          color: "var(--color-text-muted)",
-        }}
-      >
+      <p className="text-gray-600 text-sm leading-5 mt-auto">
         {desc}
       </p>
     </div>

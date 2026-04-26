@@ -97,7 +97,11 @@ export default function WalletStatus({ address, network, onDisconnect }: WalletS
             </button>
             <button
               role="menuitem"
-              onClick={() => { window.open(`https://stellar.expert/explorer/testnet/account/${address}`, "_blank", "noopener"); setOpen(false); }}
+              onClick={() => { 
+                const netPath = network?.toLowerCase() === "public" ? "public" : "testnet";
+                window.open(`https://stellar.expert/explorer/${netPath}/account/${address}`, "_blank", "noopener"); 
+                setOpen(false); 
+              }}
               className="flex items-center gap-2.5 w-full px-3 py-2 text-sm text-[var(--text)] rounded-lg hover:bg-[var(--surface)] transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
             >
               <ExternalLink size={14} aria-hidden="true" />

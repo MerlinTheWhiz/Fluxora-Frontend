@@ -495,11 +495,20 @@ Before running tests, ensure:
    - [ ] Each bar: 100%w × 24px
    - [ ] Background: var(--color-bg-tertiary)
    - [ ] Border-radius: 4px (--radius-sm)
-   - [ ] Pulsing animation: opacity 0.5 ↔ 1.0, 2s duration
-   - [ ] Staggered delay: each row +100ms delay
+   - [ ] Shimmer highlight is clearly visible in dark theme and does not disappear into the base fill
+   - [ ] Highlight band remains subtle in light theme and does not read as a harsh flash
+   - [ ] Animation cycle is smooth at ~1.5s and does not create visible banding
    - [ ] No layout shift when real data arrives
 
 **Pass Criteria**: Skeleton smooth; layout stable on data arrival
+
+**Dark Theme Contrast Check**:
+1. Force dark theme with `document.documentElement.setAttribute("data-theme", "dark")`
+2. Inspect a skeleton block on dashboard, streams, and recipient loading surfaces
+3. Verify the moving highlight is visible on both `var(--surface)` and elevated card backgrounds
+4. Confirm the shimmer remains decorative only and loading meaning is still conveyed by layout/ARIA status text
+
+**Pass Criteria**: Dark theme shimmer remains easy to perceive across all loading surfaces without overpowering nearby content
 
 ---
 

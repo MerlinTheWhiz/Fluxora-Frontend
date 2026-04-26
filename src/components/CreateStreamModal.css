@@ -23,7 +23,12 @@
   font-family: inherit;
   color: var(--text);
   max-height: 90vh;
+  /* `overflow-y: auto` enables scrolling for long modal bodies, while
+     `overflow-x: clip` lets horizontal focus-ring halos escape the
+     rounded border box without clipping rounded corners. */
+  overflow-x: clip;
   overflow-y: auto;
+  isolation: isolate;
 }
 
 /* Create stream modal: responsive, no scrollbar, consistent spacing */
@@ -40,9 +45,17 @@
   padding: clamp(1rem, 4vw, 1.25rem);
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  /* Previously `overflow: hidden`, which clipped focus rings of
+     controls near the rounded corners (close button, footer
+     buttons). The internal scroll lives on `.modal-body-scroll`,
+     so the root can use `overflow: clip` with a small clip margin
+     to preserve rounded-corner clipping while letting focus halos
+     render outward by a few pixels. */
+  overflow: clip;
+  overflow-clip-margin: 6px;
   scrollbar-width: none;
   -ms-overflow-style: none;
+  isolation: isolate;
 }
 
 .create-stream-modal::-webkit-scrollbar {
@@ -53,6 +66,10 @@
   flex: 1;
   min-height: 0;
   overflow-y: auto;
+  /* Give nested inputs/buttons horizontal breathing room so their
+     focus-ring halos aren't cropped by this scroll container. */
+  padding: 2px 4px;
+  margin: -2px -4px;
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
@@ -115,7 +132,12 @@
   color: var(--muted);
   font-size: 1.25rem;
   cursor: pointer;
-  padding: 0;
+  /* Give the close button an explicit border-radius and a little
+     padding so its focus ring follows a visible shape and doesn't
+     collide with the modal's rounded corner. */
+  border-radius: 8px;
+  padding: 4px;
+  margin: -4px;
   line-height: 1;
   display: flex;
   align-items: center;
@@ -123,6 +145,14 @@
 }
 .close-button:hover {
   color: var(--text);
+}
+.close-button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  box-shadow:
+    0 0 0 2px var(--surface-elevated),
+    0 0 0 4px var(--accent),
+    0 0 0 6px rgba(0, 212, 170, 0.35);
 }
 
 /* Progress Tracker */
@@ -267,11 +297,26 @@
   background: var(--surface-raised);
   border: 1px solid var(--border);
   border-radius: 8px;
-  overflow: hidden;
-  transition: border-color 0.2s;
+  /* `overflow: hidden` was previously used to clip child corners,
+     but it also clipped the inner input's focus outline. Focus
+     state is now communicated on the container itself via border
+     colour and a non-clipping box-shadow halo. */
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
 }
 .input-container:focus-within {
   border-color: var(--accent);
+  box-shadow:
+    0 0 0 2px rgba(0, 212, 170, 0.35),
+    inset 0 0 0 1px var(--accent);
+}
+@media (forced-colors: active) {
+  .input-container:focus-within {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
+  }
 }
 
 .input-container.narrow {
@@ -327,6 +372,15 @@
   background: rgba(0, 212, 170, 0.1);
   border-color: var(--accent);
   color: var(--accent);
+}
+
+.segment-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  box-shadow:
+    0 0 0 2px var(--surface-elevated),
+    0 0 0 4px var(--accent),
+    0 0 0 6px rgba(0, 212, 170, 0.35);
 }
 
 .toggle-container {
@@ -439,6 +493,29 @@
 /* Override global button min-height (e.g. index.css @media 768px) so modal buttons stay short */
 .create-stream-modal .modal-footer .btn {
   min-height: unset;
+}
+
+/* Footer buttons sit flush against the rounded bottom corners of
+   the modal; render their focus ring as a box-shadow so it layers
+   on top of the modal surface instead of being clipped by the
+   rounded corner. */
+.create-stream-modal .modal-footer .btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  box-shadow:
+    0 0 0 2px var(--surface-elevated),
+    0 0 0 4px var(--accent),
+    0 0 0 6px rgba(0, 212, 170, 0.35);
+}
+
+@media (forced-colors: active) {
+  .create-stream-modal .modal-footer .btn:focus-visible,
+  .segment-btn:focus-visible,
+  .close-button:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
+  }
 }
 
 .btn-back {
