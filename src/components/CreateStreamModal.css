@@ -1137,3 +1137,47 @@
   border-radius: 9999px;
   flex-shrink: 0;
 }
+
+/* ==============================================
+   VALIDATION STATE CLASSES
+   ============================================== */
+
+/* Error state: 2px danger border + subtle red tint */
+.input-container--error {
+  border: 2px solid var(--color-danger);
+  background: rgba(239, 68, 68, 0.05);
+  border-radius: var(--radius-md);
+  transition: border-color var(--transition-base), background var(--transition-base);
+}
+
+/* Success state: 1px success border + subtle green tint */
+.input-container--success {
+  border: 1px solid var(--color-success);
+  background: rgba(16, 185, 129, 0.05);
+  border-radius: var(--radius-md);
+  transition: border-color var(--transition-base), background var(--transition-base);
+}
+
+/* Validation message: base */
+.validation-message {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font: var(--font-body-sm);
+  margin-top: 0.25rem;
+}
+
+/* Error message modifier */
+.validation-message--error {
+  color: var(--color-danger);
+}
+
+/* Hint message modifier */
+.validation-message--hint {
+  color: var(--color-text-muted);
+}
+
+/* Success message modifier */
+.validation-message--success {
+  color: var(--color-success);
+}
