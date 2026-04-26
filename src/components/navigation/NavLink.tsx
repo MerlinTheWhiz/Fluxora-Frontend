@@ -1,12 +1,34 @@
 import { Link, useLocation } from "react-router-dom";
+import styles from "./NavLink.module.css";
 
 interface NavLinkProps {
   to: string;
   label: string;
+  icon?: React.ReactNode;
   onClick?: () => void;
+  disabled?: boolean;
 }
 
-export default function NavLink({ to, label, onClick }: NavLinkProps) {
+/**
+ * Navigation Link Component
+ * ──────────────────────────────────────
+ * Implements DESIGN_SPEC.md § 4.2 Navigation specifications
+ * 
+ * Features:
+ * - Auto-active state detection
+ * - aria-current="page" for screen readers
+ * - Proper focus state with visible ring
+ * - Hover/active/focus states from design spec
+ * - Icon + label support
+ * - Keyboard accessible (Tab, Enter)
+ */
+export default function NavLink({
+  to,
+  label,
+  icon,
+  onClick,
+  disabled = false,
+}: NavLinkProps) {
   const { pathname } = useLocation();
   const isActive = pathname === to || (to !== "/" && pathname.startsWith(to));
 
@@ -15,21 +37,14 @@ export default function NavLink({ to, label, onClick }: NavLinkProps) {
       to={to}
       onClick={onClick}
       aria-current={isActive ? "page" : undefined}
-      className={[
-        "relative px-3 py-2 text-sm font-medium rounded-md transition-colors duration-150 outline-none min-h-[44px] flex items-center",
-        "focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-1",
-        isActive
-          ? "text-[var(--accent)]"
-          : "text-[var(--navbar-link-color)] hover:text-[var(--text)]",
-      ].join(" ")}
+      aria-disabled={disabled ? "true" : undefined}
+      className={`${styles.navItem} ${disabled ? styles.disabled : ""}`.trim()}
+      style={{
+        pointerEvents: disabled ? "none" : "auto",
+      }}
     >
-      {label}
-      {isActive && (
-        <span
-          aria-hidden="true"
-          className="absolute bottom-0 left-3 right-3 h-0.5 rounded-full bg-[var(--accent)]"
-        />
-      )}
+      {icon && <span className={styles.navIcon}>{icon}</span>}
+      <span className={styles.navLabel}>{label}</span>
     </Link>
   );
 }

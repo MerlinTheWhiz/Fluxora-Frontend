@@ -1,24 +1,58 @@
 /* ── Skeleton tokens ─────────────────────────────────────────────────────── */
 :root {
-  --skeleton-base: #1a2438;
-  --skeleton-shine: #243048;
+  --skeleton-base: #eef3f9;
+  --skeleton-shine: #ffffff;
+  --skeleton-edge-stop: 22%;
+  --skeleton-shine-start: 42%;
+  --skeleton-shine-end: 58%;
+  --skeleton-speed: 1.5s;
+  --skeleton-glow: rgba(255, 255, 255, 0.5);
+}
+
+:root[data-theme="dark"] {
+  --skeleton-base: #1f2a3e;
+  --skeleton-shine: #38516f;
+  --skeleton-glow: rgba(143, 194, 255, 0.18);
+}
+
+:root[data-theme="light"] {
+  --skeleton-base: #e6edf5;
+  --skeleton-shine: #ffffff;
+  --skeleton-glow: rgba(255, 255, 255, 0.72);
 }
 
 .skeleton {
   background: linear-gradient(
     90deg,
-    var(--skeleton-base) 25%,
-    var(--skeleton-shine) 50%,
-    var(--skeleton-base) 75%
+    var(--skeleton-base) 0%,
+    var(--skeleton-base) var(--skeleton-edge-stop),
+    var(--skeleton-shine) var(--skeleton-shine-start),
+    var(--skeleton-shine) var(--skeleton-shine-end),
+    var(--skeleton-base) 100%
   );
-  background-size: 200% 100%;
-  animation: shimmer 1.4s linear infinite;
+  background-size: 240% 100%;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--skeleton-base) 82%, transparent);
+  animation: shimmer var(--skeleton-speed) ease-in-out infinite;
   border-radius: 6px;
+  will-change: background-position;
 }
 
 .skeleton-static {
   background-color: var(--skeleton-base);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--skeleton-base) 82%, transparent);
   border-radius: 6px;
+}
+
+:root[data-theme="dark"] .skeleton {
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.04),
+    0 0 0 1px rgba(10, 14, 23, 0.12);
+}
+
+:root[data-theme="dark"] .skeleton-static {
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.04),
+    0 0 0 1px rgba(10, 14, 23, 0.12);
 }
 
 /* ── Treasury overview layout ────────────────────────────────────────────── */
@@ -26,71 +60,100 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  gap: var(--space-lg); /* 16px */
   flex-wrap: wrap;
 }
 
 .treasury-metrics {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 1rem;
-  margin-top: 1.5rem;
+  gap: var(--space-lg); /* 16px */
+  margin-top: var(--space-xl); /* 24px */
 }
 
 .metric-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 1.25rem;
+  background: var(--color-surface-default);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-lg); /* 12px */
+  padding: var(--space-xl); /* 24px */
   display: flex;
-  gap: 0.75rem;
+  gap: var(--space-md); /* 12px */
   align-items: center;
 }
 
-.metric-icon  { width: 40px; height: 40px; flex: 0 0 40px; border-radius: 8px; }
-.metric-text  { flex: 1; display: flex; flex-direction: column; gap: 8px; }
-.metric-label { height: 10px; width: 45%; }
-.metric-value { height: 18px; width: 65%; }
+.metric-icon {
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+  border-radius: var(--radius-md); /* 8px */
+}
 
-/* ── Recent streams table ────────────────────────────────────────────────── */
+.metric-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm); /* 8px */
+}
+
+.metric-label {
+  height: 12px;
+  width: 45%;
+}
+
+.metric-value {
+  height: 20px;
+  width: 65%;
+}
+
+/* ── Recent Streams Table ────────────────────────────────────────────────── */
+
 .recent-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 2rem;
-  margin-bottom: 0.75rem;
+  margin-top: var(--space-2xl); /* 32px */
+  margin-bottom: var(--space-md); /* 12px */
 }
 
 .recent-table {
   width: 100%;
   border-collapse: collapse;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
+  background: var(--color-surface-default);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-lg); /* 12px */
   overflow: hidden;
 }
 
 .recent-table th {
   text-align: left;
-  color: var(--muted);
-  font-size: 0.75rem;
-  font-weight: 600;
+  color: var(--color-text-muted);
+  font: var(--font-label-sm); /* 500 11px/14px */
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  padding: 1rem;
-  border-bottom: 1px solid var(--border);
+  padding: var(--space-lg); /* 16px */
+  border-bottom: 1px solid var(--color-border-default);
 }
 
 .recent-table td {
-  padding: 1rem;
-  border-bottom: 1px solid var(--border);
+  padding: var(--space-lg); /* 16px */
+  border-bottom: 1px solid var(--color-border-default);
   vertical-align: middle;
 }
 
-.stream-two-lines { display: flex; flex-direction: column; gap: 6px; }
-.action-placeholder { width: 28px; height: 28px; border-radius: 6px; }
+.stream-two-lines {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm); /* 8px */
+}
+
+.action-placeholder {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-md); /* 8px */
+}
 
 /* ── Responsive ──────────────────────────────────────────────────────────── */
+
 @media (max-width: 768px) {
   .treasury-metrics {
     grid-template-columns: 1fr 1fr;
@@ -105,5 +168,12 @@
 @media (max-width: 480px) {
   .treasury-metrics {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+    background-position: 50% 0;
   }
 }

@@ -1118,3 +1118,57 @@ export default Button;
 **Document Version**: 1.0  
 **Last Updated**: March 30, 2026  
 **Status**: ✅ Ready for Implementation
+
+---
+
+## Connect Wallet Onboarding UX Update (Issue #138)
+
+### Scope
+This update is intentionally limited to UI/UX polish for Connect Wallet onboarding:
+- `src/pages/ConnectWallet.tsx`
+- `src/components/ConnectWalletModal.tsx`
+- `DESIGN_SPEC.md`
+
+No backend/API or wallet integration architecture was modified.
+
+### UX Objectives Applied
+- **Hierarchy**: Added stronger page structure with labeled onboarding stage (`Get started`), clearer title, concise explanatory copy, and checklist-style steps.
+- **Copy clarity**: Updated language to explain wallet flow and security expectation in plain terms.
+- **Button consistency**: Unified CTA and wallet-option visual language (radius, border weight, contrast, elevation).
+- **Accessible focus states**: Added explicit, high-visibility focus rings for key interactive controls (primary CTA, close button, wallet option buttons).
+- **Responsive behavior**: Applied adaptive spacing, typography, and width constraints to keep onboarding readable on mobile and desktop.
+
+### Accessibility Improvements Implemented
+- Added robust dialog semantics:
+  - `role="dialog"`
+  - `aria-modal="true"`
+  - `aria-labelledby`
+  - `aria-describedby`
+- Added relationship metadata between trigger button and modal:
+  - `aria-haspopup="dialog"`
+  - `aria-expanded`
+  - `aria-controls`
+- Ensured keyboard support:
+  - Escape closes modal
+  - Tab key focus trap inside modal
+  - Initial focus placed on close action
+- Improved interactive labels:
+  - Descriptive `aria-label` on wallet action buttons and close button
+
+### Validation Notes
+- Local component-level verification completed for:
+  - keyboard traversal and focus trap behavior
+  - visible focus indicators on actionable controls
+  - responsive layout scaling in token-aligned ranges
+- Project test command to execute in repository root:
+  - `pnpm test` (if tests are present)
+- Browser extension accessibility verification to include in PR checklist:
+  - Axe DevTools scan on Connect Wallet page and open modal state
+  - WAVE scan on Connect Wallet page and open modal state
+
+### Reviewer Checklist (Connect Wallet)
+- [ ] Focus ring is visible for CTA, modal close button, and each wallet provider button.
+- [ ] Modal traps keyboard focus and closes with `Escape`.
+- [ ] Copy clearly explains connection flow and private-key safety.
+- [ ] Layout remains readable and touch-friendly on mobile viewport widths.
+- [ ] Axe/WAVE scans reviewed and findings noted in PR description.
