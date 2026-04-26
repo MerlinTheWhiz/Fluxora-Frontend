@@ -5,6 +5,9 @@ import TreasuryOverviewLoading from '../components/TreasuryOverviewLoading';
 import TreasuryEmptyState from '../components/TreasuryEmptyState';
 import TreasuryOnboarding from '../components/TreasuryOnboarding';
 import ConnectWalletModal from '../components/ConnectWalletModal';
+import ToastNotification, {
+  type ToastVariant,
+} from "../components/ToastNotification";
 
 const ONBOARDING_KEY = 'fluxora_onboarding_dismissed';
 
@@ -30,6 +33,10 @@ export default function Dashboard() {
   const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
   const [streams] = useState<Stream[]>([]);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [toast, setToast] = useState<{
+    message: string;
+    variant: ToastVariant;
+  } | null>(null);
 
   // Resolve wallet connection state from Freighter (best-effort, no popup)
   const [walletConnected, setWalletConnected] = useState(false);
@@ -58,6 +65,13 @@ export default function Dashboard() {
     return () => clearTimeout(t);
   }, []);
 
+  useEffect(() => {
+    if (!toast) return undefined;
+
+    const timer = window.setTimeout(() => setToast(null), 4000);
+    return () => window.clearTimeout(timer);
+  }, [toast]);
+
   // Show onboarding on first-ever visit to an empty treasury
   useEffect(() => {
     if (!loading && streams.length === 0 && !hasSeenOnboarding()) {
@@ -74,6 +88,22 @@ export default function Dashboard() {
     markOnboardingSeen();
     setShowOnboarding(false);
     setIsModalOpen(true);
+  };
+
+  const handleStreamCreated = () => {
+    setIsModalOpen(false);
+    setToast({
+      message: "Stream created successfully. Review the new stream from the treasury overview.",
+      variant: "success",
+    });
+  };
+
+  const handleWalletProviderUnavailable = (providerName: string) => {
+    setIsWalletModalOpen(false);
+    setToast({
+      message: `${providerName} connection is not available in this demo yet. Try again once wallet integration is enabled.`,
+      variant: "error",
+    });
   };
 
   if (loading) return <TreasuryOverviewLoading />;
@@ -152,12 +182,26 @@ export default function Dashboard() {
       <CreateStreamModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
+        onStreamCreated={handleStreamCreated}
       />
 
       <ConnectWalletModal
         isOpen={isWalletModalOpen}
         onClose={() => setIsWalletModalOpen(false)}
+        onConnectFreighter={() => handleWalletProviderUnavailable("Freighter")}
+        onConnectAlbedo={() => handleWalletProviderUnavailable("Albedo")}
+        onConnectWalletConnect={() =>
+          handleWalletProviderUnavailable("WalletConnect")
+        }
       />
+
+      {toast ? (
+        <ToastNotification
+          message={toast.message}
+          variant={toast.variant}
+          onClose={() => setToast(null)}
+        />
+      ) : null}
     </div>
   );
 }

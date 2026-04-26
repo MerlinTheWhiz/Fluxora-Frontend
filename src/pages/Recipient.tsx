@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import EmptyState from "../components/EmptyState";
+import RecipientStreams from "../components/recipient/RecipientStreams";
 import RecipientLoading from "../components/RecipientLoading";
 
 export default function Recipient() {

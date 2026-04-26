@@ -526,19 +526,6 @@
   font-size: 1.5rem;
 }
 
-.streams-toast {
-  position: fixed;
-  right: 1.5rem;
-  bottom: 1.5rem;
-  padding: 0.85rem 1rem;
-  border-radius: 14px;
-  background: rgba(8, 15, 26, 0.94);
-  border: 1px solid rgba(45, 212, 191, 0.25);
-  color: #ecfeff;
-  box-shadow: 0 12px 30px rgba(2, 8, 23, 0.3);
-  z-index: 120;
-}
-
 @media (max-width: 960px) {
   .stream-card__expanded-layout,
   .stream-detail__layout {
@@ -572,11 +559,5 @@
   .stream-card__facts,
   .stream-panel__rows {
     grid-template-columns: 1fr;
-  }
-
-  .streams-toast {
-    left: 1rem;
-    right: 1rem;
-    bottom: 1rem;
   }
 }
